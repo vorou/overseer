@@ -10,7 +10,7 @@ namespace Overseer
 
         public SourceRepository()
         {
-            elastic = new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")));
+            elastic = new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex("overseer"));
         }
 
         public void Save(Source source)
@@ -20,7 +20,7 @@ namespace Overseer
 
         public IEnumerable<Source> FindAll()
         {
-            return elastic.Search<Source>(s=>s.AllTypes()).Documents;
+            return elastic.Search<Source>(q => q.MatchAll()).Documents;
         }
     }
 }
