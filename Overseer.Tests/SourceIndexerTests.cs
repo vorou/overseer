@@ -27,7 +27,7 @@ namespace Overseer.Tests
 
             var actual = sut.Index(SourceFolder);
 
-            actual.Single().Type.ShouldBe(TenderType.fcsNotificationZK);
+            actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
         [Test]
