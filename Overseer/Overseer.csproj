@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Source.cs" />
     <Compile Include="SourceIndexer.cs" />
+    <Compile Include="SourceRepository.cs" />
     <Compile Include="TenderType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

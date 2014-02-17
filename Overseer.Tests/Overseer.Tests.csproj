@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SourceIndexerTests.cs" />
+    <Compile Include="SourceRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FTP\ftp.zakupki.gov.ru\fcs_regions\Sakhalinskaja_obl\notifications\currMonth\notification_Sakhalinskaja_obl_2014011100_2014011200_021.xml.zip">
