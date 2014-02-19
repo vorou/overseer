@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Nest;
 
 namespace Overseer
@@ -18,9 +17,14 @@ namespace Overseer
             elastic.Index(source);
         }
 
-        public IEnumerable<Source> FindAll()
+        public Source GetById(string id)
         {
-            return elastic.Search<Source>(q => q.MatchAll()).Documents;
+            return elastic.Get<Source>(id);
+        }
+
+        public void Clear()
+        {
+            elastic.DeleteIndex<Source>();
         }
     }
 }
