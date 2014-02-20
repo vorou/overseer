@@ -46,6 +46,9 @@
     <Reference Include="Ploeh.AutoFixture.AutoFakeItEasy">
       <HintPath>..\packages\AutoFixture.AutoFakeItEasy.3.16.5\lib\net40\Ploeh.AutoFixture.AutoFakeItEasy.dll</HintPath>
     </Reference>
+    <Reference Include="Ploeh.AutoFixture.Xunit">
+      <HintPath>..\packages\AutoFixture.Xunit.3.16.5\lib\net40\Ploeh.AutoFixture.Xunit.dll</HintPath>
+    </Reference>
     <Reference Include="Shouldly">
       <HintPath>..\packages\Shouldly.1.1.1.1\lib\35\Shouldly.dll</HintPath>
     </Reference>
@@ -64,6 +67,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoFakeAttribute.cs" />
     <Compile Include="TenderReaderTests.cs" />
     <Compile Include="FileReaderTests.cs" />
     <Compile Include="SourceRepositoryTests.cs" />

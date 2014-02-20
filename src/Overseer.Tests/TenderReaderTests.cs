@@ -2,8 +2,8 @@
 using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
+using Ploeh.AutoFixture.Xunit;
 using Shouldly;
-using Xunit;
 using Xunit.Extensions;
 
 namespace Overseer.Tests
@@ -16,22 +16,22 @@ namespace Overseer.Tests
 </ns2:fcsNotificationZK>";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
-        [Fact]
-        public void Read_Always_DetectsType()
+        [Theory]
+        [AutoFake]
+        public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            StubFileReader(xml);
-            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, xml);
 
             var actual = sut.Read();
 
             actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
-        [Fact]
-        public void Read_Always_ReadsTenderId()
+        [Theory]
+        [AutoFake]
+        public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            StubFileReader(xml);
-            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, xml);
 
             var actual = sut.Read();
 
@@ -54,33 +54,33 @@ namespace Overseer.Tests
             actual.Single().Id.ShouldBe(path);
         }
 
-        [Fact]
-        public void Read_Success_OKisTrue()
+        [Theory]
+        [AutoFake]
+        public void Read_Success_OKisTrue([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            StubFileReader(xml);
-            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, xml);
 
             var actual = sut.Read();
 
             actual.Single().Success.ShouldBe(true);
         }
 
-        [Fact]
-        public void Read_BadXml_OKisFalse()
+        [Theory]
+        [AutoFake]
+        public void Read_BadXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            StubFileReader("huj");
-            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, "huj");
 
             var actual = sut.Read();
 
             actual.Single().Success.ShouldBe(false);
         }
 
-        [Fact]
-        public void Read_EmptyXml_OKisFalse()
+        [Theory]
+        [AutoFake]
+        public void Read_EmptyXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            StubFileReader("<hello/>");
-            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, "<hello/>");
 
             var actual = sut.Read();
 
@@ -92,9 +92,8 @@ namespace Overseer.Tests
             return fixture.Create<TenderReader>();
         }
 
-        private void StubFileReader(string content)
+        private static void FileReaderReturnsContent(IFileReader fileReader, string content)
         {
-            var fileReader = fixture.Freeze<IFileReader>();
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = content}});
         }
     }
