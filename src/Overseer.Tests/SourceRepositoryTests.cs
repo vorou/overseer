@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
-using Shouldly;
+﻿using Shouldly;
+using Xunit;
 
 namespace Overseer.Tests
 {
     public class SourceRepositoryTests
     {
-        [Test]
+        [Fact]
         public void Save_Always_SavesSource()
         {
             var source = new Source {Id = "panda", TenderId = "123", Type = "bear"};
@@ -19,10 +19,10 @@ namespace Overseer.Tests
             actual.Type.ShouldBe(source.Type);
         }
 
-        [Test]
+        [Fact]
         public void Clear_Always_RemovesEverything()
         {
-            var source = new Source { Id = "panda", TenderId = "123", Type = "bear" };
+            var source = new Source {Id = "panda", TenderId = "123", Type = "bear"};
             var sut = new SourceRepository();
             sut.Save(source);
 

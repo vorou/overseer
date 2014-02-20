@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using FakeItEasy;
-using NUnit.Framework;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Shouldly;
+using Xunit;
+using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
@@ -15,7 +16,7 @@ namespace Overseer.Tests
 </ns2:fcsNotificationZK>";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
-        [Test]
+        [Fact]
         public void Read_Always_DetectsType()
         {
             StubFileReader(xml);
@@ -26,7 +27,7 @@ namespace Overseer.Tests
             actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
-        [Test]
+        [Fact]
         public void Read_Always_ReadsTenderId()
         {
             StubFileReader(xml);
@@ -37,10 +38,10 @@ namespace Overseer.Tests
             actual.Single().TenderId.ShouldBe("0361200002614001321");
         }
 
-        [Test]
-        [TestCase(xml)]
-        [TestCase("huj")]
-        [TestCase("<empty/>")]
+        [Theory]
+        [InlineData(xml)]
+        [InlineData("huj")]
+        [InlineData("<empty/>")]
         public void Read_Always_SetsIdToFilePath(string content)
         {
             var path = "panda";
@@ -53,7 +54,7 @@ namespace Overseer.Tests
             actual.Single().Id.ShouldBe(path);
         }
 
-        [Test]
+        [Fact]
         public void Read_Success_OKisTrue()
         {
             StubFileReader(xml);
@@ -64,7 +65,7 @@ namespace Overseer.Tests
             actual.Single().Success.ShouldBe(true);
         }
 
-        [Test]
+        [Fact]
         public void Read_BadXml_OKisFalse()
         {
             StubFileReader("huj");
@@ -75,7 +76,7 @@ namespace Overseer.Tests
             actual.Single().Success.ShouldBe(false);
         }
 
-        [Test]
+        [Fact]
         public void Read_EmptyXml_OKisFalse()
         {
             StubFileReader("<hello/>");

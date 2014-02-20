@@ -1,29 +1,28 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using NUnit.Framework;
 using Shouldly;
+using Xunit;
 
 namespace Overseer.Tests
 {
-    public class FileReaderTests
+    public class FileReaderTests : IDisposable
     {
-        private string SourceDir;
+        private readonly string SourceDir;
 
-        [SetUp]
-        public void SetUp()
+        public FileReaderTests()
         {
             SourceDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(SourceDir);
         }
-
-        [TearDown]
-        public void TearDown()
+        
+        public void Dispose()
         {
             Directory.Delete(SourceDir, true);
         }
 
-        [Test]
+        [Fact]
         public void Read_ZipFileInRootDir_ReturnsArchiveNamePlusFileName()
         {
             using (var zip = ZipFile.Open(Path.Combine(SourceDir, "archive.zip"), ZipArchiveMode.Create))
@@ -35,7 +34,7 @@ namespace Overseer.Tests
             actual.Single().Path.ShouldBe(@"archive.zip\fileName");
         }
 
-        [Test]
+        [Fact]
         public void Read_FileInSubDir_ReturnedPathIsRelativeToSourceDir()
         {
             var subDirPath = Path.Combine(SourceDir, "dir");
@@ -49,7 +48,7 @@ namespace Overseer.Tests
             actual.Single().Path.ShouldBe(@"dir\archive.zip\fileName");
         }
 
-        [Test]
+        [Fact]
         public void Read_Always_ReturnsUnzippedContent()
         {
             var content = "<привет></привет>";
