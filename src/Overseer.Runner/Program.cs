@@ -5,7 +5,7 @@
         private static void Main()
         {
             var sourceIndexer = new TenderReader(new FileReader(@"W:\ftp"));
-            var sourceRepository = new SourceRepository();
+            var sourceRepository = new SourceRepository("overseer");
             sourceRepository.Clear();
             foreach (var source in sourceIndexer.Read())
                 sourceRepository.Save(source);
