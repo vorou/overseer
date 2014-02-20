@@ -73,7 +73,7 @@
     <Compile Include="AutoFakeAttribute.cs" />
     <Compile Include="TenderReaderTests.cs" />
     <Compile Include="FileReaderTests.cs" />
-    <Compile Include="SourceRepositoryTests.cs" />
+    <Compile Include="TenderRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -14,11 +14,11 @@ namespace Overseer
             this.fileReader = fileReader;
         }
 
-        public IEnumerable<Source> Read()
+        public IEnumerable<Tender> Read()
         {
             foreach (var file in fileReader.ReadFiles())
             {
-                var result = new Source {Id = file.Path, Success = false};
+                var result = new Tender {Id = file.Path, Success = false};
                 XDocument xDoc = null;
                 try
                 {

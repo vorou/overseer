@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Overseer.Tests
 {
-    public class SourceRepositoryTests
+    public class TenderRepositoryTests
     {
         private static readonly string index = "overseer-test";
         private readonly IFixture fixture = new Fixture();
 
-        public SourceRepositoryTests()
+        public TenderRepositoryTests()
         {
             CreateSut().Clear();
         }
@@ -21,7 +21,7 @@ namespace Overseer.Tests
         [Fact]
         public void Save_Always_SavesSource()
         {
-            var source = new Source {Id = "panda", TenderId = "123", Type = "bear"};
+            var source = new Tender {Id = "panda", TenderId = "123", Type = "bear"};
             var sut = CreateSut();
 
             Save(sut, source);
@@ -35,7 +35,7 @@ namespace Overseer.Tests
         [Fact]
         public void Clear_Always_RemovesEverything()
         {
-            var source = new Source {Id = "panda", TenderId = "123", Type = "bear"};
+            var source = new Tender {Id = "panda", TenderId = "123", Type = "bear"};
             var sut = CreateSut();
             sut.Save(source);
 
@@ -58,7 +58,7 @@ namespace Overseer.Tests
         public void GetMostExpensive_LimitIsMoreThanTotal_ReturnsAll()
         {
             var sut = CreateSut();
-            Save(sut, fixture.Create<Source>());
+            Save(sut, fixture.Create<Tender>());
 
             var actual = sut.GetMostExpensive(1);
 
@@ -68,24 +68,24 @@ namespace Overseer.Tests
         [Fact]
         public void GetMostExpensive_Always_ReturnsProperTender()
         {
-            var tender = fixture.Create<Source>();
+            var tender = fixture.Create<Tender>();
             var sut = CreateSut();
             Save(sut, tender);
 
             var actual = sut.GetMostExpensive(1);
 
-            actual.Single().ShouldBe(tender.AsSource().OfLikeness<Source>().CreateProxy());
+            actual.Single().ShouldBe(tender.AsSource().OfLikeness<Tender>().CreateProxy());
         }
 
-        private static SourceRepository CreateSut()
+        private static TenderRepository CreateSut()
         {
-            return new SourceRepository(index);
+            return new TenderRepository(index);
         }
 
-        private static void Save(SourceRepository sut, Source source)
+        private static void Save(TenderRepository sut, Tender tender)
         {
-            sut.Save(source);
-            new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(index)).Refresh<Source>();
+            sut.Save(tender);
+            new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(index)).Refresh<Tender>();
         }
     }
 }

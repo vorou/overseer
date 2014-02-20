@@ -50,10 +50,10 @@
     <Compile Include="FileReader.cs" />
     <Compile Include="FileStatus.cs" />
     <Compile Include="IFileReader.cs" />
-    <Compile Include="Source.cs" />
+    <Compile Include="Tender.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="TenderReader.cs" />
-    <Compile Include="SourceRepository.cs" />
+    <Compile Include="TenderRepository.cs" />
     <Compile Include="TenderType.cs" />
   </ItemGroup>
   <ItemGroup>
