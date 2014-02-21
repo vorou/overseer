@@ -5,7 +5,7 @@ using Nest;
 
 namespace Overseer
 {
-    public class TenderRepository
+    public class TenderRepository : ITenderRepository
     {
         private readonly ElasticClient elastic;
 
