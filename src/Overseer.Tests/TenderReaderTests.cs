@@ -16,8 +16,7 @@ namespace Overseer.Tests
 </ns2:fcsNotificationZK>";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
-        [Theory]
-        [AutoFake]
+        [Theory, AutoFake]
         public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, xml);
@@ -27,8 +26,7 @@ namespace Overseer.Tests
             actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
-        [Theory]
-        [AutoFake]
+        [Theory, AutoFake]
         public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, xml);
@@ -54,8 +52,7 @@ namespace Overseer.Tests
             actual.Single().Id.ShouldBe(path);
         }
 
-        [Theory]
-        [AutoFake]
+        [Theory, AutoFake]
         public void Read_Success_OKisTrue([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, xml);
@@ -65,8 +62,7 @@ namespace Overseer.Tests
             actual.Single().Success.ShouldBe(true);
         }
 
-        [Theory]
-        [AutoFake]
+        [Theory, AutoFake]
         public void Read_BadXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, "huj");
@@ -76,8 +72,7 @@ namespace Overseer.Tests
             actual.Single().Success.ShouldBe(false);
         }
 
-        [Theory]
-        [AutoFake]
+        [Theory, AutoFake]
         public void Read_EmptyXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, "<hello/>");
