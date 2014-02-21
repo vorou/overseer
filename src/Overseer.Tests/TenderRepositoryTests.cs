@@ -66,7 +66,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void GetMostExpensive_Always_ReturnsProperTender()
+        public void GetMostExpensive_Always_ReadsTenderProperly()
         {
             var tender = fixture.Create<Tender>();
             var sut = CreateSut();
