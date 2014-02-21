@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
@@ -10,7 +11,7 @@ namespace Overseer.Tests
 {
     public class TenderReaderTests
     {
-        private const string xml = @"
+        private const string defaultXml = @"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>";
@@ -19,7 +20,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, xml);
+            FileReaderReturnsContent(fileReader, defaultXml);
 
             var actual = sut.Read();
 
@@ -29,7 +30,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, xml);
+            FileReaderReturnsContent(fileReader, defaultXml);
 
             var actual = sut.Read();
 
@@ -37,7 +38,7 @@ namespace Overseer.Tests
         }
 
         [Theory]
-        [InlineData(xml)]
+        [InlineData(defaultXml)]
         [InlineData("huj")]
         [InlineData("<empty/>")]
         public void Read_Always_SetsIdToFilePath(string content)
@@ -55,7 +56,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Success_OKisTrue([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, xml);
+            FileReaderReturnsContent(fileReader, defaultXml);
 
             var actual = sut.Read();
 
@@ -80,6 +81,32 @@ namespace Overseer.Tests
             var actual = sut.Read();
 
             actual.Single().Success.ShouldBe(false);
+        }
+
+        public static IEnumerable<object[]> PriceTests
+        {
+            get
+            {
+                yield return new object[] {@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <lot>
+        <maxPrice>248261.2</maxPrice>
+    </lot>
+</ns2:fcsNotificationZK>", 248261.2M};
+            }
+        }
+
+        [Theory, PropertyData("PriceTests")]
+        public void Read_SingleLotElement_ReadsPrice(string xml, decimal totalPrice)
+        {
+            var fileReader = fixture.Freeze<IFileReader>();
+            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, xml);
+
+            var actual = sut.Read();
+
+            actual.Single().TotalPrice.ShouldBe(totalPrice);
         }
 
         private TenderReader CreateSut()

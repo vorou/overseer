@@ -39,6 +39,10 @@ namespace Overseer
                     continue;
                 }
 
+                var priceElement = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "maxPrice");
+                if (priceElement != null)
+                    result.TotalPrice = decimal.Parse(priceElement.Value);
+
                 result.TenderId = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
                 result.Success = true;
