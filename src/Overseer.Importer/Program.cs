@@ -1,4 +1,4 @@
-﻿namespace Overseer.Runner
+﻿namespace Overseer.Importer
 {
     public class Program
     {

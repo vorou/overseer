@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer", "Overseer\Overse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Tests", "Overseer.Tests\Overseer.Tests.csproj", "{5D73EF45-F0D3-41A2-9471-34D1F37A3E2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Runner", "Overseer.Runner\Overseer.Runner.csproj", "{CF2E1EEB-B153-4C17-8B6C-689FBE6D4F91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Importer", "Overseer.Importer\Overseer.Importer.csproj", "{CF2E1EEB-B153-4C17-8B6C-689FBE6D4F91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
