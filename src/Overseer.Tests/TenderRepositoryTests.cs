@@ -2,7 +2,6 @@
 using System.Linq;
 using Nest;
 using Ploeh.AutoFixture;
-using Ploeh.SemanticComparison.Fluent;
 using Shouldly;
 using Xunit;
 
@@ -74,7 +73,23 @@ namespace Overseer.Tests
 
             var actual = sut.GetMostExpensive(1);
 
-            actual.Single().ShouldBe(tender.AsSource().OfLikeness<Tender>().CreateProxy());
+            actual.Single().ShouldBe(tender.Ish());
+        }
+
+        [Fact]
+        public void GetMostExpensive_TwoTenders_ReturnsMoreExpensiveOne()
+        {
+            var sut = CreateSut();
+            var expensive = fixture.Create<Tender>();
+            expensive.TotalPrice = 1000M;
+            var cheap = fixture.Create<Tender>();
+            cheap.TotalPrice = 1M;
+            Save(sut, expensive);
+            Save(sut, cheap);
+
+            var actual = sut.GetMostExpensive(1);
+
+            actual.Single().ShouldBe(expensive.Ish());
         }
 
         private static TenderRepository CreateSut()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nest;
 
 namespace Overseer
@@ -30,7 +31,7 @@ namespace Overseer
 
         public IEnumerable<Tender> GetMostExpensive(int limit = 5)
         {
-            return elastic.Search<Tender>(q => q.MatchAll()).Documents;
+            return elastic.Search<Tender>(q => q.MatchAll().SortDescending(t => t.TotalPrice)).Documents.Take(limit);
         }
     }
 }
