@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Ploeh.AutoFixture.Xunit;
 using Shouldly;
+using Xunit;
 using Xunit.Extensions;
 
 namespace Overseer.Tests
@@ -83,30 +83,31 @@ namespace Overseer.Tests
             actual.Single().Success.ShouldBe(false);
         }
 
-        public static IEnumerable<object[]> PriceTests
+        [Fact]
+        public void Read_SingleLotElement_ReadsPrice()
         {
-            get
-            {
-                yield return new object[] {@"
+            AssertTotalPrice(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <lot>
         <maxPrice>248261.2</maxPrice>
     </lot>
-</ns2:fcsNotificationZK>", 248261.2M};
-            }
+</ns2:fcsNotificationZK>", 248261.2M);
         }
 
-        [Theory, PropertyData("PriceTests")]
-        public void Read_SingleLotElement_ReadsPrice(string xml, decimal totalPrice)
+        [Fact]
+        public void Read_FewMaxPriceElements_SumsThem()
         {
-            var fileReader = fixture.Freeze<IFileReader>();
-            var sut = CreateSut();
-            FileReaderReturnsContent(fileReader, xml);
-
-            var actual = sut.Read();
-
-            actual.Single().TotalPrice.ShouldBe(totalPrice);
+            AssertTotalPrice(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <lot>
+        <maxPrice>1.1</maxPrice>
+    </lot>
+    <lot>
+        <maxPrice>2.2</maxPrice>
+    </lot>
+</ns2:fcsNotificationZK>", 3.3M);
         }
 
         private TenderReader CreateSut()
@@ -117,6 +118,17 @@ namespace Overseer.Tests
         private static void FileReaderReturnsContent(IFileReader fileReader, string content)
         {
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = content}});
+        }
+
+        private void AssertTotalPrice(string xml, decimal totalPrice)
+        {
+            var fileReader = fixture.Freeze<IFileReader>();
+            var sut = CreateSut();
+            FileReaderReturnsContent(fileReader, xml);
+
+            var actual = sut.Read();
+
+            actual.Single().TotalPrice.ShouldBe(totalPrice);
         }
     }
 }
