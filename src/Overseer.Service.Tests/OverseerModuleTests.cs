@@ -29,7 +29,7 @@ namespace Overseer.Service.Tests
             var actual = sut.Get("/").Body.AsString();
 
             foreach (var tender in tenders)
-                actual.ShouldContain(tender.TenderId);
+                actual.ShouldContain(tender.Id);
         }
 
         private Browser CreateDefaultBrowser()

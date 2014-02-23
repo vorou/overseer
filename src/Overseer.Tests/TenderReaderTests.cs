@@ -26,23 +26,15 @@ namespace Overseer.Tests
             actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
-        [Fact]
-        public void Read_Always_ReadsTenderId()
-        {
-            var actual = ReadTenders(validXml);
-
-            actual.Single().TenderId.ShouldBe("0361200002614001321");
-        }
-
         [Theory, AutoFake]
-        public void Read_TenderWasParsed_SetsIdToFilePath([Frozen] IFileReader fileReader, TenderReader sut)
+        public void Read_TenderWasParsed_SetsIdToTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
             var path = "panda";
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Path = path, Content = validXml}});
 
             var actual = sut.Read();
 
-            actual.Single().Id.ShouldBe(path);
+            actual.Single().Id.ShouldBe("0361200002614001321");
         }
 
         [Fact]
@@ -90,6 +82,19 @@ namespace Overseer.Tests
 </ns2:fcsNotificationZK>");
 
             actual.Single().TotalPrice.ShouldBe(3.3M);
+        }
+
+        [Fact]
+        public void Read_TenderNameExists_ReadsIt()
+        {
+            var actual = ReadTenders(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <purchaseObjectInfo>Атомный ледокол</purchaseObjectInfo>
+</ns2:fcsNotificationZK>
+");
+
+            actual.Single().Name.ShouldBe("Атомный ледокол");
         }
 
         private IEnumerable<Tender> ReadTenders(string xml)

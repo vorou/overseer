@@ -20,21 +20,20 @@ namespace Overseer.Tests
         [Fact]
         public void Save_Always_SavesSource()
         {
-            var source = new Tender {Id = "panda", TenderId = "123", Type = "bear"};
+            var source = new Tender {Id = "panda", Type = "bear"};
             var sut = CreateSut();
 
             Save(sut, source);
 
             var actual = sut.GetById("panda");
             actual.Id.ShouldBe(source.Id);
-            actual.TenderId.ShouldBe(source.TenderId);
             actual.Type.ShouldBe(source.Type);
         }
 
         [Fact]
         public void Clear_Always_RemovesEverything()
         {
-            var source = new Tender {Id = "panda", TenderId = "123", Type = "bear"};
+            var source = new Tender {Id = "panda", Type = "bear"};
             var sut = CreateSut();
             sut.Save(source);
 
