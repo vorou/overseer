@@ -7,7 +7,7 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using Shouldly;
 using Xunit;
 
-namespace Overseer.Service.Tests
+namespace Overseer.WebApp.Tests
 {
     public class OverseerModuleTests
     {

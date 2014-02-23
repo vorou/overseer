@@ -1,7 +1,7 @@
-﻿using Nancy;
+using Nancy;
 using Nancy.TinyIoc;
 
-namespace Overseer.Service
+namespace Overseer.WebApp
 {
     public class Bootstrapper : DefaultNancyBootstrapper
     {

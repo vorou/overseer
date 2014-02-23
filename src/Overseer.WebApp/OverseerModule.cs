@@ -1,6 +1,6 @@
 using Nancy;
 
-namespace Overseer.Service
+namespace Overseer.WebApp
 {
     public class OverseerModule : NancyModule
     {
