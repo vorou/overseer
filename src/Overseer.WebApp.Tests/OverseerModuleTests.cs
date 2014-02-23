@@ -30,7 +30,7 @@ namespace Overseer.WebApp.Tests
             var actual = sut.Get("/").Body.AsString();
 
             foreach (var tender in tenders)
-                actual.ShouldContain(tender.TotalPrice.ToString(CultureInfo.InvariantCulture));
+                actual.ShouldContain(tender.TotalPrice.ToString("C", new CultureInfo("ru-RU")));
         }
 
         [Fact]

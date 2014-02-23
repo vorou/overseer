@@ -34,7 +34,7 @@
                 <h1>Самые дорогие закупки:</h1>
                 <table class="table table-striped">
                     @Each
-                    <tr><td>@Current.TotalPrice</td><td>@Current.Name</td></tr>
+                    <tr><td>@Current.Price</td><td>@Current.Name</td></tr>
                     @EndEach
                 </table>
             </div>

@@ -127,6 +127,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="OverseerModule.cs" />
+    <Compile Include="TenderModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

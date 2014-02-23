@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Linq;
 using Nancy;
 
 namespace Overseer.WebApp
@@ -6,7 +8,16 @@ namespace Overseer.WebApp
     {
         public OverseerModule(ITenderRepository tenderRepo)
         {
-            Get["/"] = _ => View["index", tenderRepo.GetMostExpensive()];
+            Get["/"] = _ =>
+                       {
+                           var tenders = tenderRepo.GetMostExpensive();
+                           return View["index", tenders.Select(Map)];
+                       };
+        }
+
+        private static TenderModel Map(Tender t)
+        {
+            return new TenderModel {Name = t.Name, Price = t.TotalPrice.ToString("C", new CultureInfo("ru-RU"))};
         }
     }
 }
