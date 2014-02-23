@@ -85,13 +85,17 @@
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Properties\" />
-    <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Overseer\Overseer.csproj">
       <Project>{8081c50c-f032-4d5a-8630-b85df58c9f55}</Project>
       <Name>Overseer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\index.sshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

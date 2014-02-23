@@ -1,5 +1,4 @@
 using Nancy;
-using Nancy.Responses.Negotiation;
 
 namespace Overseer.Service
 {
@@ -7,7 +6,7 @@ namespace Overseer.Service
     {
         public OverseerModule(ITenderRepository tenderRepo)
         {
-            Get["/"] = _ => Negotiate.WithModel(tenderRepo.GetMostExpensive()).WithAllowedMediaRange(MediaRange.FromString("application/json"));
+            Get["/"] = _ => View["index", tenderRepo.GetMostExpensive()];
         }
     }
 }
