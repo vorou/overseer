@@ -11,7 +11,7 @@ namespace Overseer.Tests
 {
     public class TenderReaderTests
     {
-        private const string defaultXml = @"
+        private const string typicalXml = @"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>";
@@ -20,7 +20,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, defaultXml);
+            FileReaderReturnsContent(fileReader, typicalXml);
 
             var actual = sut.Read();
 
@@ -30,7 +30,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, defaultXml);
+            FileReaderReturnsContent(fileReader, typicalXml);
 
             var actual = sut.Read();
 
@@ -38,7 +38,7 @@ namespace Overseer.Tests
         }
 
         [Theory]
-        [InlineData(defaultXml)]
+        [InlineData(typicalXml)]
         [InlineData("huj")]
         [InlineData("<empty/>")]
         public void Read_Always_SetsIdToFilePath(string content)
@@ -56,7 +56,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Success_OKisTrue([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, defaultXml);
+            FileReaderReturnsContent(fileReader, typicalXml);
 
             var actual = sut.Read();
 
