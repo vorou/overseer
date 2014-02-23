@@ -11,7 +11,7 @@ namespace Overseer.Tests
 {
     public class TenderReaderTests
     {
-        private const string typicalXml = @"
+        private const string validXml = @"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>";
@@ -20,7 +20,7 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, typicalXml);
+            FileReaderReturnsContent(fileReader, validXml);
 
             var actual = sut.Read();
 
@@ -30,23 +30,18 @@ namespace Overseer.Tests
         [Theory, AutoFake]
         public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
         {
-            FileReaderReturnsContent(fileReader, typicalXml);
+            FileReaderReturnsContent(fileReader, validXml);
 
             var actual = sut.Read();
 
             actual.Single().TenderId.ShouldBe("0361200002614001321");
         }
 
-        [Theory]
-        [InlineData(typicalXml)]
-        [InlineData("huj")]
-        [InlineData("<empty/>")]
-        public void Read_Always_SetsIdToFilePath(string content)
+        [Theory, AutoFake]
+        public void Read_TenderWasParsed_SetsIdToFilePath([Frozen] IFileReader fileReader, TenderReader sut)
         {
             var path = "panda";
-            var fileReader = fixture.Freeze<IFileReader>();
-            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Path = path, Content = content}});
-            var sut = CreateSut();
+            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Path = path, Content = validXml}});
 
             var actual = sut.Read();
 
@@ -54,33 +49,23 @@ namespace Overseer.Tests
         }
 
         [Theory, AutoFake]
-        public void Read_Success_OKisTrue([Frozen] IFileReader fileReader, TenderReader sut)
-        {
-            FileReaderReturnsContent(fileReader, typicalXml);
-
-            var actual = sut.Read();
-
-            actual.Single().Success.ShouldBe(true);
-        }
-
-        [Theory, AutoFake]
-        public void Read_BadXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
+        public void Read_BadXml_ReturnsNothing([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, "huj");
 
             var actual = sut.Read();
 
-            actual.Single().Success.ShouldBe(false);
+            actual.ShouldBeEmpty();
         }
 
         [Theory, AutoFake]
-        public void Read_EmptyXml_OKisFalse([Frozen] IFileReader fileReader, TenderReader sut)
+        public void Read_EmptyXml_ReturnsNothing([Frozen] IFileReader fileReader, TenderReader sut)
         {
             FileReaderReturnsContent(fileReader, "<hello/>");
 
             var actual = sut.Read();
 
-            actual.Single().Success.ShouldBe(false);
+            actual.ShouldBeEmpty();
         }
 
         [Fact]
