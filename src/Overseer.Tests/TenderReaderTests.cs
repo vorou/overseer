@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
@@ -17,22 +18,18 @@ namespace Overseer.Tests
 </ns2:fcsNotificationZK>";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
-        [Theory, AutoFake]
-        public void Read_Always_DetectsType([Frozen] IFileReader fileReader, TenderReader sut)
+        [Fact]
+        public void Read_Always_DetectsType()
         {
-            FileReaderReturnsContent(fileReader, validXml);
-
-            var actual = sut.Read();
+            var actual = ReadTenders(validXml);
 
             actual.Single().Type.ShouldBe("fcsNotificationZK");
         }
 
-        [Theory, AutoFake]
-        public void Read_Always_ReadsTenderId([Frozen] IFileReader fileReader, TenderReader sut)
+        [Fact]
+        public void Read_Always_ReadsTenderId()
         {
-            FileReaderReturnsContent(fileReader, validXml);
-
-            var actual = sut.Read();
+            var actual = ReadTenders(validXml);
 
             actual.Single().TenderId.ShouldBe("0361200002614001321");
         }
@@ -48,22 +45,18 @@ namespace Overseer.Tests
             actual.Single().Id.ShouldBe(path);
         }
 
-        [Theory, AutoFake]
-        public void Read_BadXml_ReturnsNothing([Frozen] IFileReader fileReader, TenderReader sut)
+        [Fact]
+        public void Read_BadXml_ReturnsNothing()
         {
-            FileReaderReturnsContent(fileReader, "huj");
-
-            var actual = sut.Read();
+            var actual = ReadTenders("huj");
 
             actual.ShouldBeEmpty();
         }
 
-        [Theory, AutoFake]
-        public void Read_EmptyXml_ReturnsNothing([Frozen] IFileReader fileReader, TenderReader sut)
+        [Fact]
+        public void Read_EmptyXml_ReturnsNothing()
         {
-            FileReaderReturnsContent(fileReader, "<hello/>");
-
-            var actual = sut.Read();
+            var actual = ReadTenders("<hello/>");
 
             actual.ShouldBeEmpty();
         }
@@ -71,19 +64,21 @@ namespace Overseer.Tests
         [Fact]
         public void Read_SingleLotElement_ReadsPrice()
         {
-            AssertTotalPrice(@"
+            var actual = ReadTenders(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <lot>
         <maxPrice>248261.2</maxPrice>
     </lot>
-</ns2:fcsNotificationZK>", 248261.2M);
+</ns2:fcsNotificationZK>");
+
+            actual.Single().TotalPrice.ShouldBe(248261.2M);
         }
 
         [Fact]
         public void Read_FewMaxPriceElements_SumsThem()
         {
-            AssertTotalPrice(@"
+            var actual = ReadTenders(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <lot>
@@ -92,28 +87,18 @@ namespace Overseer.Tests
     <lot>
         <maxPrice>2.2</maxPrice>
     </lot>
-</ns2:fcsNotificationZK>", 3.3M);
+</ns2:fcsNotificationZK>");
+
+            actual.Single().TotalPrice.ShouldBe(3.3M);
         }
 
-        private TenderReader CreateSut()
-        {
-            return fixture.Create<TenderReader>();
-        }
-
-        private static void FileReaderReturnsContent(IFileReader fileReader, string content)
-        {
-            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = content}});
-        }
-
-        private void AssertTotalPrice(string xml, decimal totalPrice)
+        private IEnumerable<Tender> ReadTenders(string xml)
         {
             var fileReader = fixture.Freeze<IFileReader>();
-            var sut = CreateSut();
-            FileReaderReturnsContent(fileReader, xml);
+            var sut = fixture.Create<TenderReader>();
+            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = xml}});
 
-            var actual = sut.Read();
-
-            actual.Single().TotalPrice.ShouldBe(totalPrice);
+            return sut.Read();
         }
     }
 }
