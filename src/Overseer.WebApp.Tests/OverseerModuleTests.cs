@@ -24,14 +24,9 @@ namespace Overseer.WebApp.Tests
             var totalPrice = 123456.78M;
             var tender = fixture.Create<Tender>();
             tender.TotalPrice = totalPrice;
+            var totalPriceFormatted = "123 456,78 р.";
 
-            var repo = fixture.Freeze<ITenderRepository>();
-            A.CallTo(() => repo.GetMostExpensive(5)).Returns(new[] {tender});
-            var sut = CreateDefaultBrowser();
-
-            var actual = sut.Get("/").Body.AsString();
-
-            actual.ShouldContain("123 456,78 р.");
+            AssertTenderViewContains(tender, totalPriceFormatted);
         }
 
         [Fact]
@@ -41,6 +36,11 @@ namespace Overseer.WebApp.Tests
             var tender = fixture.Create<Tender>();
             tender.Name = tenderName;
 
+            AssertTenderViewContains(tender, tenderName);
+        }
+
+        private void AssertTenderViewContains(Tender tender, string expected)
+        {
             var repo = fixture.Freeze<ITenderRepository>();
             var tenders = new[] {tender};
             A.CallTo(() => repo.GetMostExpensive(5)).Returns(tenders);
@@ -48,7 +48,7 @@ namespace Overseer.WebApp.Tests
 
             var actual = sut.Get("/").Body.AsString();
 
-            actual.ShouldContain(tenderName);
+            actual.ShouldContain(expected);
         }
 
         private Browser CreateDefaultBrowser()
