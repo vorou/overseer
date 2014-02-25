@@ -123,6 +123,7 @@
     </Content>
     <Content Include="Content\styles\styles.css" />
     <Content Include="Web.config" />
+    <None Include="Properties\PublishProfiles\localhost.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
@@ -132,9 +133,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Overseer\Overseer.csproj">
       <Project>{8081c50c-f032-4d5a-8630-b85df58c9f55}</Project>
