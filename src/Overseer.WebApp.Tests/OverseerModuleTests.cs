@@ -1,5 +1,4 @@
-﻿using System;
-using FakeItEasy;
+﻿using FakeItEasy;
 using Nancy;
 using Nancy.Testing;
 using Ploeh.AutoFixture;
@@ -36,17 +35,20 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void GetRoot_Always_ContainsNamesForTop5MostExpensiveTenders()
+        public void GetRoot_Always_ContainsNameForMostExpensiveTender()
         {
+            var tenderName = fixture.Create<string>();
+            var tender = fixture.Create<Tender>();
+            tender.Name = tenderName;
+
             var repo = fixture.Freeze<ITenderRepository>();
-            var tenders = fixture.CreateMany<Tender>(5);
+            var tenders = new[] {tender};
             A.CallTo(() => repo.GetMostExpensive(5)).Returns(tenders);
             var sut = CreateDefaultBrowser();
 
             var actual = sut.Get("/").Body.AsString();
 
-            foreach (var tender in tenders)
-                actual.ShouldContain(tender.Name);
+            actual.ShouldContain(tenderName);
         }
 
         private Browser CreateDefaultBrowser()
