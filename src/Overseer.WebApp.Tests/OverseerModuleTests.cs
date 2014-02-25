@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System;
 using FakeItEasy;
 using Nancy;
 using Nancy.Testing;
@@ -20,17 +20,19 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void GetRoot_Always_ContainsPricesForTop5MostExpensiveTenders()
+        public void GetRoot_Always_ContainsPriceForMostExpensiveTender()
         {
+            var totalPrice = 123456.78M;
+            var tender = fixture.Create<Tender>();
+            tender.TotalPrice = totalPrice;
+
             var repo = fixture.Freeze<ITenderRepository>();
-            var tenders = fixture.CreateMany<Tender>(5);
-            A.CallTo(() => repo.GetMostExpensive(5)).Returns(tenders);
+            A.CallTo(() => repo.GetMostExpensive(5)).Returns(new[] {tender});
             var sut = CreateDefaultBrowser();
 
             var actual = sut.Get("/").Body.AsString();
 
-            foreach (var tender in tenders)
-                actual.ShouldContain(tender.TotalPrice.ToString("C", new CultureInfo("ru-RU")));
+            actual.ShouldContain("123 456,78 р.");
         }
 
         [Fact]
