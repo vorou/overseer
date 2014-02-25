@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FakeItEasy;
 using Ploeh.AutoFixture;
@@ -95,6 +96,44 @@ namespace Overseer.Tests
 ");
 
             actual.Single().Name.ShouldBe("Атомный ледокол");
+        }
+
+        [Fact]
+        public void Read_PublishDateExists_ReadsItToUtc()
+        {
+            var actual = ReadTenders(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <docPublishDate>2014-01-11T19:07:34.112+04:00</docPublishDate>
+</ns2:fcsNotificationZK>
+");
+
+            actual.Single().PublishDate.ShouldBe(new DateTime(2014, 1, 11, 15, 7, 34, 112, DateTimeKind.Utc));
+        }
+
+        [Fact]
+        public void Read_NoPublishDate_SetsToNull()
+        {
+            var actual = ReadTenders(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+</ns2:fcsNotificationZK>
+");
+
+            actual.Single().PublishDate.ShouldBe(null);
+        }
+
+        [Fact]
+        public void Read_InvalidPublishDate_SetsToNull()
+        {
+            var actual = ReadTenders(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <docPublishDate>panda</docPublishDate>
+</ns2:fcsNotificationZK>
+");
+
+            actual.Single().PublishDate.ShouldBe(null);
         }
 
         private IEnumerable<Tender> ReadTenders(string xml)

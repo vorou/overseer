@@ -53,7 +53,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void GetMostExpensive_LimitIsMoreThanTotal_ReturnsAll()
+        public void GetMostExpensive_LimitIsMoreThanTotalAllTendersAreActive_ReturnsAll()
         {
             var sut = CreateSut();
             Save(sut, CreateActiveTender());
@@ -64,7 +64,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void GetMostExpensive_Always_ReadsTenderProperly()
+        public void GetMostExpensive_ActiveTender_ReadsTenderProperly()
         {
             var tender = CreateActiveTender();
             var sut = CreateSut();
@@ -76,7 +76,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void GetMostExpensive_TwoTenders_ReturnsMoreExpensiveOne()
+        public void GetMostExpensive_TwoActiveTenders_ReturnsMoreExpensiveOne()
         {
             var sut = CreateSut();
             var expensive = CreateActiveTender();

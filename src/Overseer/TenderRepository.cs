@@ -34,7 +34,7 @@ namespace Overseer
             return
                 elastic.Search<Tender>(
                                        q =>
-                                       q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today)))
+                                       q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today.ToUniversalTime())))
                                         .SortDescending(t => t.TotalPrice)).Documents.Take(limit);
         }
     }

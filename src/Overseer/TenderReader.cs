@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -40,6 +41,14 @@ namespace Overseer
                 var priceElements = xDoc.Descendants().Where(el => el.Name.LocalName == "maxPrice");
                 if (priceElements.Any())
                     result.TotalPrice = priceElements.Sum(el => decimal.Parse(el.Value));
+
+                var firstOrDefault = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "docPublishDate");
+                if (firstOrDefault != null)
+                {
+                    DateTimeOffset publishDate;
+                    if (DateTimeOffset.TryParse(firstOrDefault.Value, out publishDate))
+                        result.PublishDate = publishDate.UtcDateTime;
+                }
 
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
