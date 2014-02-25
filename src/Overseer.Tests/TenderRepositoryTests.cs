@@ -56,7 +56,7 @@ namespace Overseer.Tests
         public void GetMostExpensive_LimitIsMoreThanTotal_ReturnsAll()
         {
             var sut = CreateSut();
-            Save(sut, fixture.Create<Tender>());
+            Save(sut, CreateActiveTender());
 
             var actual = sut.GetMostExpensive(1);
 
@@ -66,7 +66,7 @@ namespace Overseer.Tests
         [Fact]
         public void GetMostExpensive_Always_ReadsTenderProperly()
         {
-            var tender = fixture.Create<Tender>();
+            var tender = CreateActiveTender();
             var sut = CreateSut();
             Save(sut, tender);
 
@@ -79,9 +79,9 @@ namespace Overseer.Tests
         public void GetMostExpensive_TwoTenders_ReturnsMoreExpensiveOne()
         {
             var sut = CreateSut();
-            var expensive = fixture.Create<Tender>();
+            var expensive = CreateActiveTender();
             expensive.TotalPrice = 1000M;
-            var cheap = fixture.Create<Tender>();
+            var cheap = CreateActiveTender();
             cheap.TotalPrice = 1M;
             Save(sut, expensive);
             Save(sut, cheap);
@@ -89,6 +89,19 @@ namespace Overseer.Tests
             var actual = sut.GetMostExpensive(1);
 
             actual.Single().ShouldBe(expensive.Ish());
+        }
+
+        [Fact]
+        public void GetMostExpensive_TenderWasPublishedYesterday_ReturnsEmpty()
+        {
+            var sut = CreateSut();
+            var yesterdayTender = fixture.Create<Tender>();
+            yesterdayTender.PublishDate = DateTime.Now.AddDays(-1);
+            Save(sut, yesterdayTender);
+
+            var actual = sut.GetMostExpensive();
+
+            actual.Count().ShouldBe(0);
         }
 
         private static TenderRepository CreateSut()
@@ -100,6 +113,13 @@ namespace Overseer.Tests
         {
             sut.Save(tender);
             new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(index)).Refresh<Tender>();
+        }
+
+        private Tender CreateActiveTender()
+        {
+            var tender = fixture.Create<Tender>();
+            tender.PublishDate = DateTime.Now;
+            return tender;
         }
     }
 }

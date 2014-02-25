@@ -31,7 +31,11 @@ namespace Overseer
 
         public IEnumerable<Tender> GetMostExpensive(int limit = 5)
         {
-            return elastic.Search<Tender>(q => q.MatchAll().SortDescending(t => t.TotalPrice)).Documents.Take(limit);
+            return
+                elastic.Search<Tender>(
+                                       q =>
+                                       q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today)))
+                                        .SortDescending(t => t.TotalPrice)).Documents.Take(limit);
         }
     }
 }

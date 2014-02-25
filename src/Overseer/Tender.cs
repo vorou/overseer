@@ -1,3 +1,5 @@
+using System;
+
 namespace Overseer
 {
     public class Tender
@@ -6,5 +8,6 @@ namespace Overseer
         public string Type { get; set; }
         public decimal TotalPrice { get; set; }
         public string Name { get; set; }
+        public DateTime PublishDate { get; set; }
     }
 }
