@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Nest;
 
 namespace Overseer
 {
     public class TenderRepository : ITenderRepository
     {
+        private readonly ILog log = LogManager.GetLogger(typeof (TenderRepository));
+
         private readonly ElasticClient elastic;
 
         public TenderRepository(string index)
@@ -31,11 +34,13 @@ namespace Overseer
 
         public IEnumerable<Tender> GetMostExpensive(int limit = 5)
         {
-            return
+            var result =
                 elastic.Search<Tender>(
                                        q =>
                                        q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today.ToUniversalTime())))
-                                        .SortDescending(t => t.TotalPrice)).Documents.Take(limit);
+                                        .SortDescending(t => t.TotalPrice)).Documents.Take(limit).ToList();
+            log.InfoFormat("found {0} tenders", result.Count());
+            return result;
         }
     }
 }
