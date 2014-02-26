@@ -4,6 +4,7 @@ using Nest;
 using Ploeh.AutoFixture;
 using Shouldly;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
@@ -91,17 +92,19 @@ namespace Overseer.Tests
             actual.Single().ShouldBe(expensive.Ish());
         }
 
-        [Fact]
-        public void GetMostExpensive_TenderWasPublishedYesterday_ReturnsEmpty()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void GetMostExpensive_MostRecentTenderWasPublishedSomeDaysAgo_ReturnsIt(int daysAgo)
         {
             var sut = CreateSut();
             var yesterdayTender = fixture.Create<Tender>();
-            yesterdayTender.PublishDate = DateTime.Now.AddDays(-1);
+            yesterdayTender.PublishDate = DateTime.Now.AddDays(-daysAgo);
             Save(sut, yesterdayTender);
 
             var actual = sut.GetMostExpensive();
 
-            actual.Count().ShouldBe(0);
+            actual.Single().ShouldBe(yesterdayTender.Ish());
         }
 
         private static TenderRepository CreateSut()
