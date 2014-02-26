@@ -4,16 +4,20 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using log4net;
 
 namespace Overseer
 {
     public class FileReader : IFileReader
     {
+        private readonly ILog log = LogManager.GetLogger(typeof (FileReader));
+
         private readonly Uri ftp;
 
         public FileReader(Uri ftp)
         {
             this.ftp = ftp;
+            log.InfoFormat("using {0}", ftp);
         }
 
         public IEnumerable<SourceFile> ReadFiles()
