@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using Shouldly;
 using Xunit;
 using Xunit.Extensions;
@@ -71,6 +72,16 @@ namespace Overseer.Tests
             var actual = sut.ReadFiles();
 
             actual.Single().Content.ShouldBe(content);
+        }
+
+        [Fact]
+        public void UnitOfWork_StateUnderTest_ExpectedBehavior()
+        {
+            var request = new WebClient {Credentials = new NetworkCredential("free", "free")};
+            var newFileData =
+                request.DownloadData(
+                                     new Uri(
+                                         "ftp://ftp.zakupki.gov.ru/fcs_regions/Adygeja_Resp/notifications/currMonth/notification_Adygeja_Resp_2014011100_2014011200_001.xml.zip"));
         }
 
         private FileReader CreateSut()

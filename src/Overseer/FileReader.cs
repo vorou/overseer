@@ -22,7 +22,8 @@ namespace Overseer
 
         public IEnumerable<SourceFile> ReadFiles()
         {
-            foreach (var regionName in ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()))
+            var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).ToList();
+            foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
                 foreach (var fileUri in ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName)))
