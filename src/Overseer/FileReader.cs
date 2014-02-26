@@ -23,9 +23,15 @@ namespace Overseer
         public IEnumerable<SourceFile> ReadFiles()
         {
             foreach (var regionName in ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()))
+            {
+                log.InfoFormat("importing region {0}", regionName);
                 foreach (var fileUri in ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName)))
+                {
+                    log.InfoFormat("importing file {0}", fileUri);
                     foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(fileUri))).Entries)
                         yield return new SourceFile {Path = fileUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                }
+            }
         }
 
         private IEnumerable<Uri> ListDirectory(string path)
@@ -41,6 +47,7 @@ namespace Overseer
             }
             catch (WebException)
             {
+                log.WarnFormat("failed to list directory {0}", path);
                 yield break;
             }
             var streamReader = new StreamReader(response.GetResponseStream());
@@ -54,10 +61,19 @@ namespace Overseer
             }
         }
 
-        private static byte[] GetFile(Uri uri)
+        private byte[] GetFile(Uri uri)
         {
             var request = new WebClient {Credentials = new NetworkCredential("free", "free")};
-            var newFileData = request.DownloadData(uri);
+            byte[] newFileData;
+            try
+            {
+                newFileData = request.DownloadData(uri);
+            }
+            catch (WebException)
+            {
+                log.WarnFormat("failed to download file {0}", uri);
+                throw;
+            }
             return newFileData;
         }
     }
