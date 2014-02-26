@@ -15,6 +15,7 @@ namespace Overseer.Tests
 
         public FileReaderTests()
         {
+            CreateSut().Reset();
             RemoveDirectoryIfExists();
             Directory.CreateDirectory(FtpMountDir);
         }
@@ -71,6 +72,37 @@ namespace Overseer.Tests
             var actual = sut.ReadFiles();
 
             actual.Single().Content.ShouldBe(content);
+        }
+
+        [Fact]
+        public void Read_ZipAlreadyImported_ReturnsEmpty()
+        {
+            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(subDirPath);
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, subDirPath, "panda.zip"), ZipArchiveMode.Create))
+                zip.CreateEntry(Path.GetRandomFileName());
+            var sut = CreateSut();
+            sut.ReadFiles().ToList();
+
+            var actual = sut.ReadFiles();
+
+            actual.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Read_ReaderWasReset_ReadsAgain()
+        {
+            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(subDirPath);
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, subDirPath, "panda.zip"), ZipArchiveMode.Create))
+                zip.CreateEntry(Path.GetRandomFileName());
+            var sut = CreateSut();
+            sut.ReadFiles().ToList();
+            sut.Reset();
+
+            var actual = sut.ReadFiles();
+
+            actual.ShouldNotBeEmpty();
         }
 
         private FileReader CreateSut()

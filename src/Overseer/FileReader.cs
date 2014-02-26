@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using log4net;
+using Nest;
 
 namespace Overseer
 {
@@ -13,10 +14,12 @@ namespace Overseer
         private readonly ILog log = LogManager.GetLogger(typeof (FileReader));
 
         private readonly Uri ftp;
+        private readonly ElasticClient elastic;
 
         public FileReader(Uri ftp)
         {
             this.ftp = ftp;
+            elastic = new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex("overseer"));
             log.InfoFormat("using {0}", ftp);
         }
 
@@ -26,13 +29,26 @@ namespace Overseer
             foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
-                foreach (var fileUri in ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName)))
+                foreach (var zipUri in ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName)))
                 {
-                    log.InfoFormat("importing file {0}", fileUri);
-                    foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(fileUri))).Entries)
-                        yield return new SourceFile {Path = fileUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                    var importEntryId = zipUri.ToString();
+                    if (elastic.Get<ImportEntry>(importEntryId) != null)
+                    {
+                        log.InfoFormat("already imported, skipping {0}", zipUri);
+                        continue;
+                    }
+
+                    log.InfoFormat("importing file {0}", zipUri);
+                    foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(zipUri))).Entries)
+                        yield return new SourceFile {Path = zipUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                    elastic.Index(new ImportEntry {Id = importEntryId});
                 }
             }
+        }
+
+        public void Reset()
+        {
+            elastic.DeleteIndex<ImportEntry>();
         }
 
         private IEnumerable<Uri> ListDirectory(string path)
