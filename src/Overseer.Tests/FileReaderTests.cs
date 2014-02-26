@@ -7,37 +7,39 @@ using Xunit;
 
 namespace Overseer.Tests
 {
-    public class FileReaderTests : IDisposable
+    public class FileReaderTests
     {
-        private readonly string SourceDir;
+        private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Tests\ftp";
+        private readonly Uri Ftp = new Uri("ftp://localhost");
 
         public FileReaderTests()
         {
-            SourceDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(SourceDir);
+            RemoveDirectoryIfExists();
+            Directory.CreateDirectory(FtpMountDir);
         }
-        
-        public void Dispose()
+
+        private void RemoveDirectoryIfExists()
         {
-            Directory.Delete(SourceDir, true);
+            if (Directory.Exists(FtpMountDir))
+                Directory.Delete(FtpMountDir, true);
         }
 
         [Fact]
-        public void Read_ZipFileInRootDir_ReturnsArchiveNamePlusFileName()
+        public void Read_ZipInRootDir_IgnoresIt()
         {
-            using (var zip = ZipFile.Open(Path.Combine(SourceDir, "archive.zip"), ZipArchiveMode.Create))
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, "archive.zip"), ZipArchiveMode.Create))
                 zip.CreateEntry("fileName");
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
 
-            actual.Single().Path.ShouldBe(@"archive.zip\fileName");
+            actual.Count().ShouldBe(0);
         }
 
         [Fact]
-        public void Read_FileInSubDir_ReturnedPathIsRelativeToSourceDir()
+        public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName()
         {
-            var subDirPath = Path.Combine(SourceDir, "dir");
+            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
             Directory.CreateDirectory(subDirPath);
             using (var zip = ZipFile.Open(Path.Combine(subDirPath, "archive.zip"), ZipArchiveMode.Create))
                 zip.CreateEntry("fileName");
@@ -45,14 +47,16 @@ namespace Overseer.Tests
 
             var actual = sut.ReadFiles();
 
-            actual.Single().Path.ShouldBe(@"dir\archive.zip\fileName");
+            actual.Single().Path.ShouldBe(Ftp + @"fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/fileName");
         }
 
         [Fact]
-        public void Read_Always_ReturnsUnzippedContent()
+        public void Read_ZipInNotificationsCurrentMonth_ReadsItsContent()
         {
+            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(subDirPath);
             var content = "<привет></привет>";
-            using (var zip = ZipFile.Open(Path.Combine(SourceDir, Path.GetRandomFileName()), ZipArchiveMode.Create))
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\panda.zip"), ZipArchiveMode.Create))
             {
                 var entry = zip.CreateEntry(Path.GetRandomFileName());
                 using (var stream = new StreamWriter(entry.Open()))
@@ -67,7 +71,7 @@ namespace Overseer.Tests
 
         private FileReader CreateSut()
         {
-            return new FileReader(SourceDir);
+            return new FileReader(Ftp);
         }
     }
 }

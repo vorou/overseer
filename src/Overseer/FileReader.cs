@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 
 namespace Overseer
 {
     public class FileReader : IFileReader
     {
+        private readonly Uri ftp;
         private readonly string dir;
 
         public FileReader(string dir)
@@ -13,18 +16,49 @@ namespace Overseer
             this.dir = dir;
         }
 
+        public FileReader(Uri ftp)
+        {
+            this.ftp = ftp;
+        }
+
         public IEnumerable<SourceFile> ReadFiles()
         {
-            var files = Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories);
-            foreach (var zipPath in files)
-                using (var zip = ZipFile.OpenRead(zipPath))
-                    foreach (var entry in zip.Entries)
-                        yield return
-                            new SourceFile
-                            {
-                                Path = Path.Combine(zipPath.Substring(dir.Length + 1), entry.Name),
-                                Content = new StreamReader(entry.Open()).ReadToEnd()
-                            };
+            foreach (var fileUri in ListDirectory())
+                foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(fileUri))).Entries)
+                    yield return new SourceFile {Path = fileUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+        }
+
+        private IEnumerable<Uri> ListDirectory()
+        {
+            var baseUri = new Uri(ftp, "fcs_regions/Adygeja_Resp/notifications/currMonth/");
+            var ftpRequest = (FtpWebRequest) WebRequest.Create(baseUri);
+            ftpRequest.Credentials = new NetworkCredential("free", "free");
+            ftpRequest.Method = WebRequestMethods.Ftp.ListDirectory;
+            FtpWebResponse response;
+            try
+            {
+                response = (FtpWebResponse) ftpRequest.GetResponse();
+            }
+            catch (WebException)
+            {
+                yield break;
+            }
+            var streamReader = new StreamReader(response.GetResponseStream());
+
+            while (true)
+            {
+                var line = streamReader.ReadLine();
+                if (line == null)
+                    break;
+                yield return new Uri(baseUri, line);
+            }
+        }
+
+        private static byte[] GetFile(Uri uri)
+        {
+            var request = new WebClient {Credentials = new NetworkCredential("free", "free")};
+            var newFileData = request.DownloadData(uri);
+            return newFileData;
         }
     }
 }
