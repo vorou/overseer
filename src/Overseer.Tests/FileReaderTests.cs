@@ -4,13 +4,14 @@ using System.IO.Compression;
 using System.Linq;
 using Shouldly;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
     public class FileReaderTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Tests\ftp";
-        private readonly Uri Ftp = new Uri("ftp://localhost");
+        private readonly Uri FtpUri = new Uri("ftp://localhost");
 
         public FileReaderTests()
         {
@@ -36,18 +37,21 @@ namespace Overseer.Tests
             actual.Count().ShouldBe(0);
         }
 
-        [Fact]
-        public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName()
+        [Theory]
+        [InlineData(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", @"fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/")]
+        [InlineData(@"fcs_regions\Panda_Country\notifications\currMonth\", @"fcs_regions/Panda_Country/notifications/currMonth/archive.zip/")]
+        public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName(string targetDirectory, string targetDirUri)
         {
-            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            var subDirPath = Path.Combine(FtpMountDir, targetDirectory);
             Directory.CreateDirectory(subDirPath);
+            var fileName = "fileName";
             using (var zip = ZipFile.Open(Path.Combine(subDirPath, "archive.zip"), ZipArchiveMode.Create))
-                zip.CreateEntry("fileName");
+                zip.CreateEntry(fileName);
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
 
-            actual.Single().Path.ShouldBe(Ftp + @"fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/fileName");
+            actual.Single().Path.ShouldBe(FtpUri + targetDirUri + fileName);
         }
 
         [Fact]
@@ -71,7 +75,7 @@ namespace Overseer.Tests
 
         private FileReader CreateSut()
         {
-            return new FileReader(Ftp);
+            return new FileReader(FtpUri);
         }
     }
 }

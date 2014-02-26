@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace Overseer.Importer
 {
@@ -6,7 +7,7 @@ namespace Overseer.Importer
     {
         private static void Main()
         {
-            var sourceIndexer = new TenderReader(new FileReader(ConfigurationManager.AppSettings["src-dir"]));
+            var sourceIndexer = new TenderReader(new FileReader(new Uri(ConfigurationManager.AppSettings["ftp"])));
             var sourceRepository = new TenderRepository("overseer");
             sourceRepository.Clear();
             foreach (var source in sourceIndexer.Read())
