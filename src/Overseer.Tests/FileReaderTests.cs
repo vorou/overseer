@@ -29,8 +29,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipInRootDir_IgnoresIt()
         {
-            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, "archive.zip"), ZipArchiveMode.Create))
-                zip.CreateEntry("fileName");
+            CreateZipOnFtp("", "archive.zip", "fileName");
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
@@ -43,11 +42,8 @@ namespace Overseer.Tests
         [InlineData(@"fcs_regions\Panda_Country\notifications\currMonth\", @"fcs_regions/Panda_Country/notifications/currMonth/archive.zip/")]
         public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName(string targetDirectory, string targetDirUri)
         {
-            var subDirPath = Path.Combine(FtpMountDir, targetDirectory);
-            Directory.CreateDirectory(subDirPath);
             var fileName = "fileName";
-            using (var zip = ZipFile.Open(Path.Combine(subDirPath, "archive.zip"), ZipArchiveMode.Create))
-                zip.CreateEntry(fileName);
+            CreateZipOnFtp(targetDirectory, "archive.zip", fileName);
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
@@ -77,10 +73,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipAlreadyImported_ReturnsEmpty()
         {
-            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
-            Directory.CreateDirectory(subDirPath);
-            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, subDirPath, "panda.zip"), ZipArchiveMode.Create))
-                zip.CreateEntry(Path.GetRandomFileName());
+            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
 
@@ -92,10 +85,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ReaderWasReset_ReadsAgain()
         {
-            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
-            Directory.CreateDirectory(subDirPath);
-            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, subDirPath, "panda.zip"), ZipArchiveMode.Create))
-                zip.CreateEntry(Path.GetRandomFileName());
+            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
             sut.Reset();
@@ -105,9 +95,22 @@ namespace Overseer.Tests
             actual.ShouldNotBeEmpty();
         }
 
+        [Fact(Skip = "TODO")]
+        public void MarkImported_ZipMarkedAsImported_ReturnsEmpty()
+        {
+        }
+
         private FileReader CreateSut()
         {
             return new FileReader(FtpUri);
+        }
+
+        private void CreateZipOnFtp(string dirPath, string zipName, string zipEntryName)
+        {
+            var fullDirPath = Path.Combine(FtpMountDir, dirPath);
+            Directory.CreateDirectory(fullDirPath);
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, fullDirPath, zipName), ZipArchiveMode.Create))
+                zip.CreateEntry(zipEntryName);
         }
     }
 }
