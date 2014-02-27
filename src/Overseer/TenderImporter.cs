@@ -1,21 +1,22 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace Overseer
 {
-    public class TenderRetriever
+    public class TenderImporter
     {
         private readonly IFileReader fileReader;
+        private readonly ITenderRepository repo;
 
-        public TenderRetriever(IFileReader fileReader)
+        public TenderImporter(IFileReader fileReader, ITenderRepository repo)
         {
             this.fileReader = fileReader;
+            this.repo = repo;
         }
 
-        public IEnumerable<Tender> GetNew()
+        public void Import()
         {
             foreach (var file in fileReader.ReadFiles())
             {
@@ -52,7 +53,7 @@ namespace Overseer
 
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
-                yield return result;
+                repo.Save(result);
             }
         }
     }

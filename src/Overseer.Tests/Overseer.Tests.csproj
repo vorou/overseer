@@ -72,7 +72,7 @@
   <ItemGroup>
     <Compile Include="AutoFakeAttribute.cs" />
     <Compile Include="LikenessExtensions.cs" />
-    <Compile Include="TenderRetrieverTests.cs" />
+    <Compile Include="TenderImporterTests.cs" />
     <Compile Include="FileReaderTests.cs" />
     <Compile Include="TenderRepositoryTests.cs" />
   </ItemGroup>

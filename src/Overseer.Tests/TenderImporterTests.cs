@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
-using Ploeh.AutoFixture.Xunit;
-using Shouldly;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
-    public class TenderRetrieverTests
+    public class TenderImporterTests
     {
         private const string validXml = @"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -22,56 +18,48 @@ namespace Overseer.Tests
         [Fact]
         public void Read_Always_DetectsType()
         {
-            var actual = ReadTenders(validXml);
-
-            actual.Single().Type.ShouldBe("fcsNotificationZK");
-        }
-
-        [Theory, AutoFake]
-        public void Read_TenderWasParsed_SetsIdToTenderId([Frozen] IFileReader fileReader, TenderRetriever sut)
-        {
-            var path = "panda";
-            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Path = path, Content = validXml}});
-
-            var actual = sut.GetNew();
-
-            actual.Single().Id.ShouldBe("0361200002614001321");
+            Import(validXml);
+            AssertImportedTender(t => t.Type == "fcsNotificationZK");
         }
 
         [Fact]
-        public void Read_BadXml_ReturnsNothing()
+        public void Read_TenderWasParsed_SetsIdToTenderId()
         {
-            var actual = ReadTenders("huj");
-
-            actual.ShouldBeEmpty();
+            Import(validXml);
+            AssertImportedTender(t => t.Id == "0361200002614001321");
         }
 
         [Fact]
-        public void Read_EmptyXml_ReturnsNothing()
+        public void Read_BadXml_SavesNothing()
         {
-            var actual = ReadTenders("<hello/>");
+            Import("panda");
+            AssertNothingWasSaved();
+        }
 
-            actual.ShouldBeEmpty();
+        [Fact]
+        public void Read_EmptyXml_SavesNothing()
+        {
+            Import("<hello/>");
+            AssertNothingWasSaved();
         }
 
         [Fact]
         public void Read_SingleLotElement_ReadsPrice()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <lot>
         <maxPrice>248261.2</maxPrice>
     </lot>
 </ns2:fcsNotificationZK>");
-
-            actual.Single().TotalPrice.ShouldBe(248261.2M);
+            AssertImportedTender(t => t.TotalPrice == 248261.2M);
         }
 
         [Fact]
         public void Read_FewMaxPriceElements_SumsThem()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <lot>
@@ -81,68 +69,76 @@ namespace Overseer.Tests
         <maxPrice>2.2</maxPrice>
     </lot>
 </ns2:fcsNotificationZK>");
-
-            actual.Single().TotalPrice.ShouldBe(3.3M);
+            AssertImportedTender(t => t.TotalPrice == 3.3M);
         }
 
         [Fact]
         public void Read_TenderNameExists_ReadsIt()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <purchaseObjectInfo>Атомный ледокол</purchaseObjectInfo>
 </ns2:fcsNotificationZK>
 ");
-
-            actual.Single().Name.ShouldBe("Атомный ледокол");
+            AssertImportedTender(t => t.Name == "Атомный ледокол");
         }
 
         [Fact]
         public void Read_PublishDateExists_ReadsItToUtc()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <docPublishDate>2014-01-11T19:07:34.112+04:00</docPublishDate>
 </ns2:fcsNotificationZK>
 ");
-
-            actual.Single().PublishDate.ShouldBe(new DateTime(2014, 1, 11, 15, 7, 34, 112, DateTimeKind.Utc));
+            AssertImportedTender(t => t.PublishDate == new DateTime(2014, 1, 11, 15, 7, 34, 112, DateTimeKind.Utc));
         }
 
         [Fact]
         public void Read_NoPublishDate_SetsToNull()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>
 ");
-
-            actual.Single().PublishDate.ShouldBe(null);
+            AssertImportedTender(t => t.PublishDate == null);
         }
 
         [Fact]
         public void Read_InvalidPublishDate_SetsToNull()
         {
-            var actual = ReadTenders(@"
+            Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
     <docPublishDate>panda</docPublishDate>
 </ns2:fcsNotificationZK>
 ");
-
-            actual.Single().PublishDate.ShouldBe(null);
+            AssertImportedTender(t => t.PublishDate == null);
         }
 
-        private IEnumerable<Tender> ReadTenders(string xml)
+        private void Import(string xml)
         {
+            fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IFileReader>();
-            var sut = fixture.Create<TenderRetriever>();
+            var sut = fixture.Create<TenderImporter>();
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = xml}});
 
-            return sut.GetNew();
+            sut.Import();
+        }
+
+        private void AssertImportedTender(Expression<Func<Tender, bool>> predicate)
+        {
+            var repo = fixture.Create<ITenderRepository>();
+            A.CallTo(() => repo.Save(A<Tender>.That.Matches(predicate))).MustHaveHappened();
+        }
+
+        private void AssertNothingWasSaved()
+        {
+            var repo = fixture.Create<ITenderRepository>();
+            A.CallTo(() => repo.Save(A<Tender>._)).MustNotHaveHappened();
         }
     }
 }
