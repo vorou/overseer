@@ -119,12 +119,22 @@ namespace Overseer.Tests
             AssertImportedTender(t => t.PublishDate == null);
         }
 
-        private void Import(string xml)
+        [Fact]
+        public void Import_Succeeded_MarksAsImported()
+        {
+            var src = "path";
+            Import(validXml, src);
+
+            var reader = fixture.Create<IFileReader>();
+            A.CallTo(() => reader.MarkImported(src)).MustHaveHappened();
+        }
+
+        private void Import(string xml, string path = null)
         {
             fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IFileReader>();
             var sut = fixture.Create<TenderImporter>();
-            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = xml}});
+            A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = xml, Path = path}});
 
             sut.Import();
         }

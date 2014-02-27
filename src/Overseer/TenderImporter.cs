@@ -7,18 +7,18 @@ namespace Overseer
 {
     public class TenderImporter
     {
-        private readonly IFileReader fileReader;
+        private readonly IFileReader reader;
         private readonly ITenderRepository repo;
 
-        public TenderImporter(IFileReader fileReader, ITenderRepository repo)
+        public TenderImporter(IFileReader reader, ITenderRepository repo)
         {
-            this.fileReader = fileReader;
+            this.reader = reader;
             this.repo = repo;
         }
 
         public void Import()
         {
-            foreach (var file in fileReader.ReadFiles())
+            foreach (var file in reader.ReadFiles())
             {
                 var result = new Tender();
                 XDocument xDoc = null;
@@ -54,6 +54,7 @@ namespace Overseer
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
                 repo.Save(result);
+                reader.MarkImported(file.Path);
             }
         }
     }
