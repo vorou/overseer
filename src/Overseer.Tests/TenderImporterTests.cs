@@ -16,35 +16,35 @@ namespace Overseer.Tests
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
         [Fact]
-        public void Read_Always_DetectsType()
+        public void Import_Always_DetectsType()
         {
             Import(validXml);
             AssertImportedTender(t => t.Type == "fcsNotificationZK");
         }
 
         [Fact]
-        public void Read_TenderWasParsed_SetsIdToTenderId()
+        public void Import_TenderWasParsed_SetsIdToTenderId()
         {
             Import(validXml);
             AssertImportedTender(t => t.Id == "0361200002614001321");
         }
 
         [Fact]
-        public void Read_BadXml_SavesNothing()
+        public void Import_BadXml_SavesNothing()
         {
             Import("panda");
             AssertNothingWasSaved();
         }
 
         [Fact]
-        public void Read_EmptyXml_SavesNothing()
+        public void Import_EmptyXml_SavesNothing()
         {
             Import("<hello/>");
             AssertNothingWasSaved();
         }
 
         [Fact]
-        public void Read_SingleLotElement_ReadsPrice()
+        public void Import_SingleLotElement_ReadsPrice()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -57,7 +57,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_FewMaxPriceElements_SumsThem()
+        public void Import_FewMaxPriceElements_SumsThem()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -73,7 +73,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_TenderNameExists_ReadsIt()
+        public void Import_TenderNameExists_ReadsIt()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -85,7 +85,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_PublishDateExists_ReadsItToUtc()
+        public void Import_PublishDateExists_ReadsItToUtc()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -97,7 +97,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_NoPublishDate_SetsToNull()
+        public void Import_NoPublishDate_SetsToNull()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -108,7 +108,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_InvalidPublishDate_SetsToNull()
+        public void Import_InvalidPublishDate_SetsToNull()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
