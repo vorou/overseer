@@ -11,7 +11,7 @@ using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
-    public class TenderReaderTests
+    public class TenderRetrieverTests
     {
         private const string validXml = @"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
