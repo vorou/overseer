@@ -57,7 +57,7 @@
     <Compile Include="ITenderRepository.cs" />
     <Compile Include="Tender.cs" />
     <Compile Include="SourceFile.cs" />
-    <Compile Include="TenderReader.cs" />
+    <Compile Include="TenderRetriever.cs" />
     <Compile Include="TenderRepository.cs" />
     <Compile Include="TenderType.cs" />
   </ItemGroup>

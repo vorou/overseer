@@ -6,16 +6,16 @@ using System.Xml.Linq;
 
 namespace Overseer
 {
-    public class TenderReader
+    public class TenderRetriever
     {
         private readonly IFileReader fileReader;
 
-        public TenderReader(IFileReader fileReader)
+        public TenderRetriever(IFileReader fileReader)
         {
             this.fileReader = fileReader;
         }
 
-        public IEnumerable<Tender> Read()
+        public IEnumerable<Tender> GetNew()
         {
             foreach (var file in fileReader.ReadFiles())
             {

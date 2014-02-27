@@ -28,12 +28,12 @@ namespace Overseer.Tests
         }
 
         [Theory, AutoFake]
-        public void Read_TenderWasParsed_SetsIdToTenderId([Frozen] IFileReader fileReader, TenderReader sut)
+        public void Read_TenderWasParsed_SetsIdToTenderId([Frozen] IFileReader fileReader, TenderRetriever sut)
         {
             var path = "panda";
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Path = path, Content = validXml}});
 
-            var actual = sut.Read();
+            var actual = sut.GetNew();
 
             actual.Single().Id.ShouldBe("0361200002614001321");
         }
@@ -139,10 +139,10 @@ namespace Overseer.Tests
         private IEnumerable<Tender> ReadTenders(string xml)
         {
             var fileReader = fixture.Freeze<IFileReader>();
-            var sut = fixture.Create<TenderReader>();
+            var sut = fixture.Create<TenderRetriever>();
             A.CallTo(() => fileReader.ReadFiles()).Returns(new[] {new SourceFile {Content = xml}});
 
-            return sut.Read();
+            return sut.GetNew();
         }
     }
 }

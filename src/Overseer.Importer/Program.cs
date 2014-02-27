@@ -14,14 +14,14 @@ namespace Overseer.Importer
         private static void Main()
         {
             ConfigureLogger();
-            var tenderReader = new TenderReader(new FileReader(new Uri(ConfigurationManager.AppSettings["ftp"])));
+            var retriever = new TenderRetriever(new FileReader(new Uri(ConfigurationManager.AppSettings["ftp"])));
             var indexName = "overseer";
             log.InfoFormat("using index {0}", indexName);
             var sourceRepository = new TenderRepository(indexName);
             log.Info("removing existing data");
             sourceRepository.Clear();
             log.Info("importing");
-            foreach (var source in tenderReader.Read())
+            foreach (var source in retriever.GetNew())
             {
                 log.InfoFormat("importing tender with id={0}", source.Id);
                 sourceRepository.Save(source);
