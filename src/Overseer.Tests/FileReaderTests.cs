@@ -37,17 +37,18 @@ namespace Overseer.Tests
         }
 
         [Theory]
-        [InlineData(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", @"fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/")]
-        [InlineData(@"fcs_regions\Panda_Country\notifications\currMonth\", @"fcs_regions/Panda_Country/notifications/currMonth/archive.zip/")]
-        public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName(string targetDirectory, string targetDirUri)
+        [InlineData(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "archive.zip", "entry",
+            @"ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/entry")]
+        [InlineData(@"fcs_regions\Panda_Country\notifications\currMonth\", "archive.zip", "entry",
+            @"ftp://localhost/fcs_regions/Panda_Country/notifications/currMonth/archive.zip/entry")]
+        public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName(string targetDirectory, string zipName, string entryName, string expected)
         {
-            var fileName = "fileName";
-            CreateZipOnFtp(targetDirectory, "archive.zip", fileName);
+            CreateZipOnFtp(targetDirectory, zipName, entryName);
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
 
-            actual.Single().Path.ShouldBe(new Uri("ftp://localhost") + targetDirUri + fileName);
+            actual.Single().Path.ShouldBe(expected);
         }
 
         [Fact]
