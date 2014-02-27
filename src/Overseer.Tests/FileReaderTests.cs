@@ -10,6 +10,7 @@ namespace Overseer.Tests
 {
     public class FileReaderTests
     {
+        private const string ValidCurrMonthDirPath = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Tests\ftp";
         private readonly Uri FtpUri = new Uri("ftp://localhost");
 
@@ -54,10 +55,10 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipInNotificationsCurrentMonth_ReadsItsContent()
         {
-            var subDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            var subDirPath = Path.Combine(FtpMountDir, ValidCurrMonthDirPath);
             Directory.CreateDirectory(subDirPath);
             var content = "<привет></привет>";
-            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\panda.zip"), ZipArchiveMode.Create))
+            using (var zip = ZipFile.Open(Path.Combine(subDirPath, @"panda.zip"), ZipArchiveMode.Create))
             {
                 var entry = zip.CreateEntry(Path.GetRandomFileName());
                 using (var stream = new StreamWriter(entry.Open()))
@@ -73,7 +74,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipAlreadyImported_ReturnsEmpty()
         {
-            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipOnFtp(ValidCurrMonthDirPath, "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
 
@@ -85,7 +86,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ReaderWasReset_ReadsAgain()
         {
-            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipOnFtp(ValidCurrMonthDirPath, "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
             sut.Reset();
@@ -95,9 +96,10 @@ namespace Overseer.Tests
             actual.ShouldNotBeEmpty();
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void MarkImported_ZipMarkedAsImported_ReturnsEmpty()
         {
+//            CreateZipOnFtp(@"");
         }
 
         private FileReader CreateSut()
