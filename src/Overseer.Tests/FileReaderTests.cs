@@ -28,7 +28,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipInRootDir_IgnoresIt()
         {
-            CreateZipOnFtp("", "archive.zip", "fileName");
+            CreateZipAtFtp("", "archive.zip", "fileName");
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
@@ -43,7 +43,7 @@ namespace Overseer.Tests
             @"ftp://localhost/fcs_regions/Panda_Country/notifications/currMonth/archive.zip/entry")]
         public void Read_ZipInNotificationsCurrentMonth_PathIsUriPlusEntryName(string targetDirectory, string zipName, string entryName, string expected)
         {
-            CreateZipOnFtp(targetDirectory, zipName, entryName);
+            CreateZipAtFtp(targetDirectory, zipName, entryName);
             var sut = CreateSut();
 
             var actual = sut.ReadFiles();
@@ -73,7 +73,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ZipAlreadyImported_ReturnsEmpty()
         {
-            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
 
@@ -85,7 +85,7 @@ namespace Overseer.Tests
         [Fact]
         public void Read_ReaderWasReset_ReadsAgain()
         {
-            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
             sut.ReadFiles().ToList();
             sut.Reset();
@@ -98,7 +98,7 @@ namespace Overseer.Tests
         [Fact]
         public void MarkImported_ZipMarkedAsImported_ReturnsEmpty()
         {
-            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
 
             sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip");
@@ -112,7 +112,7 @@ namespace Overseer.Tests
             return new FileReader(new Uri("ftp://localhost"));
         }
 
-        private void CreateZipOnFtp(string dirPath, string zipName, string zipEntryName)
+        private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)
         {
             var fullDirPath = Path.Combine(FtpMountDir, dirPath);
             Directory.CreateDirectory(fullDirPath);
