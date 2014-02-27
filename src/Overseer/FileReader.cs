@@ -93,5 +93,11 @@ namespace Overseer
             }
             return newFileData;
         }
+
+        public void MarkImported(string zipUri)
+        {
+            elastic.Index(new ImportEntry {Id = zipUri});
+            elastic.Refresh<ImportEntry>();
+        }
     }
 }

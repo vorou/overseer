@@ -11,7 +11,6 @@ namespace Overseer.Tests
     public class FileReaderTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Tests\ftp";
-        private readonly Uri FtpUri = new Uri("ftp://localhost");
 
         public FileReaderTests()
         {
@@ -48,7 +47,7 @@ namespace Overseer.Tests
 
             var actual = sut.ReadFiles();
 
-            actual.Single().Path.ShouldBe(FtpUri + targetDirUri + fileName);
+            actual.Single().Path.ShouldBe(new Uri("ftp://localhost") + targetDirUri + fileName);
         }
 
         [Fact]
@@ -98,12 +97,18 @@ namespace Overseer.Tests
         [Fact]
         public void MarkImported_ZipMarkedAsImported_ReturnsEmpty()
         {
-            //            CreateZipOnFtp(@"");
+            CreateZipOnFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            var sut = CreateSut();
+
+            sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip");
+
+            var actual = sut.ReadFiles();
+            actual.ShouldBeEmpty();
         }
 
         private FileReader CreateSut()
         {
-            return new FileReader(FtpUri);
+            return new FileReader(new Uri("ftp://localhost"));
         }
 
         private void CreateZipOnFtp(string dirPath, string zipName, string zipEntryName)
