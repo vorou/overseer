@@ -50,6 +50,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElasticFactory.cs" />
     <Compile Include="FileReader.cs" />
     <Compile Include="FileStatus.cs" />
     <Compile Include="IFileReader.cs" />
