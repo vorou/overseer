@@ -2,11 +2,13 @@ using System;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using log4net;
 
 namespace Overseer
 {
     public class TenderImporter
     {
+        private readonly ILog log = LogManager.GetLogger(typeof (TenderImporter));
         private readonly IFileReader reader;
         private readonly ITenderRepository repo;
 
@@ -55,6 +57,7 @@ namespace Overseer
                 result.Type = xDoc.Root.Name.LocalName;
                 repo.Save(result);
                 reader.MarkImported(file.Path);
+                log.InfoFormat("imported {0}", file.Path);
             }
         }
     }
