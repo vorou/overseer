@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Timers;
 using log4net;
 
@@ -26,7 +27,7 @@ namespace Overseer.Doorkeeper
 
         public void Start()
         {
-            RunImport();
+            Task.Run(() => RunImport());
         }
 
         public void Stop()
