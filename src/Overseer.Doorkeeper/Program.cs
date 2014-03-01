@@ -26,14 +26,14 @@ namespace Overseer.Doorkeeper
 
                                 x.SetDescription("Overseer's import service");
                                 x.SetDisplayName("Overseer Doorkeeper");
-                                x.SetServiceName("osdoorkeeper");
+                                x.SetServiceName("doorkeeper");
                             });
         }
 
         private static void ConfigureLogger()
         {
             var layout = new PatternLayout("%-5level [%thread]: %message%newline");
-            var file = new FileAppender {AppendToFile = false, File = @"c:\logs\os-doorkeeper.log", Layout = layout};
+            var file = new RollingFileAppender {AppendToFile = false, File = @"c:\logs\doorkeeper.log", Layout = layout};
             file.ActivateOptions();
             var console = new ConsoleAppender {Layout = layout};
             console.ActivateOptions();
