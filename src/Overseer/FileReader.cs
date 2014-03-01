@@ -41,7 +41,6 @@ namespace Overseer
                     log.InfoFormat("importing file {0}", zipUri);
                     foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(zipUri))).Entries)
                         yield return new SourceFile {Path = zipUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
-                    elastic.Index(new ImportEntry {Id = importEntryId});
                 }
             }
         }

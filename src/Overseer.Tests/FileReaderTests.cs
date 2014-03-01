@@ -71,7 +71,7 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Read_ZipAlreadyImported_ReturnsEmpty()
+        public void Read_ZipWasntMarkedAsImported_ReadsItAgain()
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
@@ -79,7 +79,7 @@ namespace Overseer.Tests
 
             var actual = sut.ReadFiles();
 
-            actual.ShouldBeEmpty();
+            actual.ShouldNotBeEmpty();
         }
 
         [Fact]
