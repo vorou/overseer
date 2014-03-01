@@ -88,7 +88,7 @@ namespace Overseer
             }
             catch (WebException)
             {
-                log.WarnFormat("failed to download file {0}", uri);
+                log.ErrorFormat("failed to download file {0}", uri);
                 throw;
             }
             return newFileData;
