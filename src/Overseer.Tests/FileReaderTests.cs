@@ -51,6 +51,19 @@ namespace Overseer.Tests
             actual.Single().Path.ShouldBe(expected);
         }
 
+        [Theory]
+        [InlineData(@"fcs_regions\Adygeja_Resp\notifications\prevMonth\", "archive.zip", "entry",
+            @"ftp://localhost/fcs_regions/Adygeja_Resp/notifications/prevMonth/archive.zip/entry")]
+        public void Read_ZipInNotificationsPrevMonth_PathIsUriPlusEntryName(string targetDirectory, string zipName, string entryName, string expected)
+        {
+            CreateZipAtFtp(targetDirectory, zipName, entryName);
+            var sut = CreateSut();
+
+            var actual = sut.ReadFiles();
+
+            actual.Single().Path.ShouldBe(expected);
+        }
+
         [Fact]
         public void Read_ZipInNotificationsCurrentMonth_ReadsItsContent()
         {

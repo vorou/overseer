@@ -29,7 +29,10 @@ namespace Overseer
             foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
-                foreach (var zipUri in ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName)))
+                foreach (
+                    var zipUri in
+                        ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
+                            .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
                 {
                     var importEntryId = zipUri.ToString();
                     if (elastic.Get<ImportEntry>(importEntryId) != null)
