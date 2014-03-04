@@ -13,7 +13,8 @@ namespace Overseer.Doorkeeper
 
         public Doorkeeper()
         {
-            importer = new TenderImporter(new FileReader(new Uri("ftp://ftp.zakupki.gov.ru")), new TenderRepository("overseer"));
+            var index = "overseer";
+            importer = new TenderImporter(new FileReader(new Uri("ftp://ftp.zakupki.gov.ru"), index), new TenderRepository(index));
             timer = new Timer(TimeSpan.FromHours(1).TotalMilliseconds) {AutoReset = false};
             timer.Elapsed += (s, a) => RunImport();
         }
