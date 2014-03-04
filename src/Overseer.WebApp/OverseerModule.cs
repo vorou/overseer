@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Linq;
 using Nancy;
+using Overseer.WebApp.Models;
 
 namespace Overseer.WebApp
 {
@@ -11,7 +12,9 @@ namespace Overseer.WebApp
             Get["/"] = _ =>
                        {
                            var tenders = tenderRepo.GetMostExpensive();
-                           return View["index", tenders.Select(Map)];
+                           var mostRecent = tenderRepo.GetMostRecentTenderDate();
+                           var model = new HomeModel {Tenders = tenders.Select(Map), MostRecentTenderDate = mostRecent.ToString("M", new CultureInfo("ru-RU"))};
+                           return View["index", model];
                        };
         }
 

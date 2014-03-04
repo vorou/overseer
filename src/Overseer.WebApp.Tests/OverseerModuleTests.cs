@@ -1,4 +1,5 @@
-﻿using FakeItEasy;
+﻿using System;
+using FakeItEasy;
 using Nancy;
 using Nancy.Testing;
 using Ploeh.AutoFixture;
@@ -11,7 +12,7 @@ namespace Overseer.WebApp.Tests
     public class OverseerModuleTests
     {
         [Fact]
-        public void GetRoot_Always_Responses()
+        public void HomePage_Always_Responses()
         {
             var sut = CreateDefaultBrowser();
 
@@ -19,7 +20,7 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void GetRoot_Always_ContainsPriceForMostExpensiveTender()
+        public void HomePage_Always_ContainsPriceForMostExpensiveTender()
         {
             var totalPrice = 123456.78M;
             var tender = fixture.Create<Tender>();
@@ -30,13 +31,25 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void GetRoot_Always_ContainsNameForMostExpensiveTender()
+        public void HomePage_Always_ContainsNameForMostExpensiveTender()
         {
             var tenderName = fixture.Create<string>();
             var tender = fixture.Create<Tender>();
             tender.Name = tenderName;
 
             AssertTenderViewContains(tender, tenderName);
+        }
+
+        [Fact]
+        public void HomePage_Always_ContainsMostRecentTenderDate()
+        {
+            var repo = fixture.Freeze<ITenderRepository>();
+            A.CallTo(() => repo.GetMostRecentTenderDate()).Returns(new DateTime(1234, 12, 21));
+            var sut = CreateDefaultBrowser();
+
+            var actual = sut.Get("/").Body.AsString();
+
+            actual.ShouldContain("21 декабря");
         }
 
         private void AssertTenderViewContains(Tender tender, string expected)

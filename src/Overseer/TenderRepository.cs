@@ -22,6 +22,11 @@ namespace Overseer
             elastic.Index(tender);
         }
 
+        public DateTime GetMostRecentTenderDate()
+        {
+            return new DateTime();
+        }
+
         public Tender GetById(string id)
         {
             return elastic.Get<Tender>(id);

@@ -1,4 +1,4 @@
-﻿namespace Overseer.WebApp
+﻿namespace Overseer.WebApp.Models
 {
     public class TenderModel
     {

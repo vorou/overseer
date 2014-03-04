@@ -131,8 +131,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Models\HomeModel.cs" />
+    <Compile Include="Models\TenderModel.cs" />
     <Compile Include="OverseerModule.cs" />
-    <Compile Include="TenderModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Overseer
 {
@@ -6,5 +7,6 @@ namespace Overseer
     {
         IEnumerable<Tender> GetMostExpensive(int limit = 5);
         void Save(Tender tender);
+        DateTime GetMostRecentTenderDate();
     }
 }
