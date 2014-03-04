@@ -107,6 +107,20 @@ namespace Overseer.Tests
             actual.Single().ShouldBe(yesterdayTender.Ish());
         }
 
+        [Fact]
+        public void GetMostRecentTenderDate_SavedSingleTender_ReturnsHisPublishDate()
+        {
+            var date = new DateTime(1234, 12, 21);
+            var tender = fixture.Create<Tender>();
+            tender.PublishDate = date;
+            var sut = CreateSut();
+            Save(sut, tender);
+
+            var actual = sut.GetMostRecentTenderDate();
+
+            actual.ShouldBe(date);
+        }
+
         private static TenderRepository CreateSut()
         {
             return new TenderRepository(index);

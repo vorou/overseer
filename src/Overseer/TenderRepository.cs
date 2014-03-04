@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
 using Nest;
 
 namespace Overseer
@@ -20,9 +19,9 @@ namespace Overseer
             elastic.Index(tender);
         }
 
-        public DateTime GetMostRecentTenderDate()
+        public DateTime? GetMostRecentTenderDate()
         {
-            return new DateTime();
+            return elastic.Search<Tender>(q=>q.MatchAll().SortDescending(d=>d.PublishDate)).Documents.First().PublishDate;
         }
 
         public Tender GetById(string id)
