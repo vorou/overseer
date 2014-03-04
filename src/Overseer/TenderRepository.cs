@@ -8,8 +8,6 @@ namespace Overseer
 {
     public class TenderRepository : ITenderRepository
     {
-        private readonly ILog log = LogManager.GetLogger(typeof (TenderRepository));
-
         private readonly ElasticClient elastic;
 
         public TenderRepository(string index)
