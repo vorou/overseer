@@ -29,10 +29,9 @@ namespace Overseer
             foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
-                foreach (
-                    var zipUri in
-                        ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
-                            .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
+                foreach (var zipUri in
+                    ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
+                        .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
                 {
                     var importEntryId = zipUri.ToString();
                     if (elastic.Get<ImportEntry>(importEntryId) != null)
@@ -42,7 +41,19 @@ namespace Overseer
                     }
 
                     log.InfoFormat("importing file {0}", zipUri);
-                    foreach (var zipEntry in new ZipArchive(new MemoryStream(GetFile(zipUri))).Entries)
+
+                    ZipArchive zip;
+                    try
+                    {
+                        zip = new ZipArchive(new MemoryStream(GetFile(zipUri)));
+                    }
+                    catch (InvalidDataException)
+                    {
+                        log.ErrorFormat("Bad zip: {0}", zipUri);
+                        continue;
+                    }
+
+                    foreach (var zipEntry in zip.Entries)
                         yield return new SourceFile {Path = zipUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
                 }
             }
@@ -88,6 +99,7 @@ namespace Overseer
             {
                 newFileData = request.DownloadData(uri);
             }
+                //TODO: how to test this?
             catch (WebException)
             {
                 log.ErrorFormat("failed to download file {0}", uri);

@@ -120,6 +120,34 @@ namespace Overseer.Tests
             actual.ShouldBeEmpty();
         }
 
+        [Fact]
+        public void Read_BadZip_ReturnsEmpty()
+        {
+            var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(fullDirPath);
+            File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
+            var sut = CreateSut();
+
+            var actual = sut.ReadFiles();
+
+            actual.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Read_BadZipAndGoodZip_ReturnsGoodZip()
+        {
+            var currMonth = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
+            CreateZipAtFtp(currMonth, "good.zip", Path.GetRandomFileName());
+            var fullDirPath = Path.Combine(FtpMountDir, currMonth);
+            Directory.CreateDirectory(fullDirPath);
+            File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
+            var sut = CreateSut();
+
+            var actual = sut.ReadFiles();
+
+            actual.Count().ShouldBe(1);
+        }
+
         private FileReader CreateSut()
         {
             return new FileReader(new Uri("ftp://localhost"));

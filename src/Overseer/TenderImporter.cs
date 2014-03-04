@@ -57,6 +57,7 @@ namespace Overseer
                 result.Type = xDoc.Root.Name.LocalName;
                 repo.Save(result);
                 reader.MarkImported(file.Path);
+
                 log.InfoFormat("imported {0}", file.Path);
             }
         }
