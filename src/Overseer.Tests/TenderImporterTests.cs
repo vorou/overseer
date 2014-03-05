@@ -4,6 +4,7 @@ using FakeItEasy;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Overseer.Tests
 {
@@ -127,6 +128,24 @@ namespace Overseer.Tests
 
             var reader = fixture.Create<IFileReader>();
             A.CallTo(() => reader.MarkImported(src)).MustHaveHappened();
+        }
+
+        [Theory]
+        [InlineData("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip", "01")]
+        [InlineData("ftp://localhost/fcs_regions/Omskaja_obl/notifications/currMonth/panda.zip", "55")]
+        public void Import_KnownRegion_SetsRegion(string src, string expected)
+        {
+            Import(validXml, src);
+
+            AssertImportedTender(t => t.Region == expected);
+        }
+
+        [Fact]
+        public void Import_UnknownRegion_SetsRegionToNull()
+        {
+            Import(validXml, "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
+
+            AssertImportedTender(t => t.Region == null);
         }
 
         private void Import(string xml, string path = null)
