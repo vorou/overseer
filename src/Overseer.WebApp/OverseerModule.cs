@@ -11,7 +11,7 @@ namespace Overseer.WebApp
         {
             Get["/"] = _ =>
                        {
-                           var tenders = tenderRepo.GetMostExpensive();
+                           var tenders = tenderRepo.GetMostExpensive(10);
                            var model = new HomeModel {Tenders = tenders.Select(Map)};
                            return View["index", model];
                        };

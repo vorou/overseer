@@ -43,7 +43,7 @@ namespace Overseer.WebApp.Tests
         {
             var repo = fixture.Freeze<ITenderRepository>();
             var tenders = new[] {tender};
-            A.CallTo(() => repo.GetMostExpensive(5)).Returns(tenders);
+            A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(tenders);
             var sut = CreateDefaultBrowser();
 
             var actual = sut.Get("/").Body.AsString();
