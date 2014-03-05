@@ -33,15 +33,6 @@ namespace Overseer
                     ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
                         .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
                 {
-                    var importEntryId = zipUri.ToString();
-                    if (elastic.Get<ImportEntry>(importEntryId) != null)
-                    {
-                        log.InfoFormat("already imported, skipping {0}", zipUri);
-                        continue;
-                    }
-
-                    log.InfoFormat("importing file {0}", zipUri);
-
                     ZipArchive zip;
                     try
                     {
@@ -54,7 +45,16 @@ namespace Overseer
                     }
 
                     foreach (var zipEntry in zip.Entries)
-                        yield return new SourceFile {Path = zipUri + "/" + zipEntry, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                    {
+                        var path = zipUri + "/" + zipEntry;
+                        if (elastic.Get<ImportEntry>(path) != null)
+                        {
+                            log.InfoFormat("already imported, skipping {0}", zipUri);
+                            continue;
+                        }
+
+                        yield return new SourceFile {Path = path, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                    }
                 }
             }
         }

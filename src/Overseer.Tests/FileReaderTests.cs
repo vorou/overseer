@@ -109,12 +109,12 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void MarkImported_ZipMarkedAsImported_ReturnsEmpty()
+        public void MarkImported_ZipEntryMarkedAsImported_ReturnsEmpty()
         {
-            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", "entry");
             var sut = CreateSut();
 
-            sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip");
+            sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/entry");
 
             var actual = sut.ReadNewFiles();
             actual.ShouldBeEmpty();
