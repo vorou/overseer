@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Nest;
 using Ploeh.AutoFixture;
 using Shouldly;
 using Xunit;
@@ -10,7 +9,6 @@ namespace Overseer.Tests
 {
     public class TenderRepositoryTests
     {
-        private static readonly string index = "overseer-test";
         private readonly IFixture fixture = new Fixture();
 
         public TenderRepositoryTests()
@@ -141,7 +139,7 @@ namespace Overseer.Tests
         private static void Save(TenderRepository sut, Tender tender)
         {
             sut.Save(tender);
-            new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(index)).Refresh<Tender>();
+            ElasticClientFactory.Create().Refresh<Tender>();
         }
 
         private Tender CreateActiveTender()

@@ -1,33 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
 using Nest;
 
 namespace Overseer
 {
     public class TenderRepository : ITenderRepository
     {
-        private readonly ILog log = LogManager.GetLogger(typeof (TenderRepository));
         private readonly ElasticClient elastic;
 
         public TenderRepository()
         {
             elastic = ElasticClientFactory.Create();
-            var response = elastic.MapFromAttributes<Tender>();
-            if (!response.OK)
-                throw new InvalidOperationException("failed to create mapping");
         }
 
         public void Save(Tender tender)
         {
-            var response = elastic.Index(tender);
-            if (!response.OK)
-            {
-                var message = string.Format("failed to save tender: {0}", tender.Id);
-                log.ErrorFormat(message);
-                throw new InvalidOperationException(message);
-            }
+            elastic.Index(tender);
         }
 
         public DateTime GetMostRecentTenderDate()
