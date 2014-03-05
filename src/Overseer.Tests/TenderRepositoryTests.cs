@@ -135,7 +135,7 @@ namespace Overseer.Tests
 
         private static TenderRepository CreateSut()
         {
-            return new TenderRepository(index);
+            return new TenderRepository();
         }
 
         private static void Save(TenderRepository sut, Tender tender)

@@ -14,13 +14,20 @@ namespace Overseer
         public TenderRepository()
         {
             elastic = ElasticClientFactory.Create();
+            var response = elastic.MapFromAttributes<Tender>();
+            if (!response.OK)
+                throw new InvalidOperationException("failed to create mapping");
         }
 
         public void Save(Tender tender)
         {
             var response = elastic.Index(tender);
             if (!response.OK)
-                log.ErrorFormat("failed to save tender: {0}", tender.Id);
+            {
+                var message = string.Format("failed to save tender: {0}", tender.Id);
+                log.ErrorFormat(message);
+                throw new InvalidOperationException(message);
+            }
         }
 
         public DateTime GetMostRecentTenderDate()
