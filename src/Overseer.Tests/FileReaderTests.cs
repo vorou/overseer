@@ -31,7 +31,7 @@ namespace Overseer.Tests
             CreateZipAtFtp("", "archive.zip", "fileName");
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.Count().ShouldBe(0);
         }
@@ -46,7 +46,7 @@ namespace Overseer.Tests
             CreateZipAtFtp(targetDirectory, zipName, entryName);
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.Single().Path.ShouldBe(expected);
         }
@@ -59,7 +59,7 @@ namespace Overseer.Tests
             CreateZipAtFtp(targetDirectory, zipName, entryName);
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.Single().Path.ShouldBe(expected);
         }
@@ -78,7 +78,7 @@ namespace Overseer.Tests
             }
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.Single().Content.ShouldBe(content);
         }
@@ -88,9 +88,9 @@ namespace Overseer.Tests
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
-            sut.ReadFiles().ToList();
+            sut.ReadNewFiles().ToList();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.ShouldNotBeEmpty();
         }
@@ -100,10 +100,10 @@ namespace Overseer.Tests
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
-            sut.ReadFiles().ToList();
+            sut.ReadNewFiles().ToList();
             sut.Reset();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.ShouldNotBeEmpty();
         }
@@ -116,7 +116,7 @@ namespace Overseer.Tests
 
             sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip");
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
             actual.ShouldBeEmpty();
         }
 
@@ -128,7 +128,7 @@ namespace Overseer.Tests
             File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.ShouldBeEmpty();
         }
@@ -143,7 +143,7 @@ namespace Overseer.Tests
             File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
             var sut = CreateSut();
 
-            var actual = sut.ReadFiles();
+            var actual = sut.ReadNewFiles();
 
             actual.Count().ShouldBe(1);
         }

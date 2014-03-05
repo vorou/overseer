@@ -4,7 +4,7 @@ namespace Overseer
 {
     public interface IFileReader
     {
-        IEnumerable<SourceFile> ReadFiles();
+        IEnumerable<SourceFile> ReadNewFiles();
         void MarkImported(string src);
     }
 }

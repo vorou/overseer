@@ -20,7 +20,7 @@ namespace Overseer
 
         public void Import()
         {
-            foreach (var file in reader.ReadFiles())
+            foreach (var file in reader.ReadNewFiles())
             {
                 var result = new Tender();
                 XDocument xDoc = null;

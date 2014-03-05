@@ -23,7 +23,7 @@ namespace Overseer
             log.InfoFormat("using {0}", ftp);
         }
 
-        public IEnumerable<SourceFile> ReadFiles()
+        public IEnumerable<SourceFile> ReadNewFiles()
         {
             var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).ToList();
             foreach (var regionName in regionNames)
