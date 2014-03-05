@@ -57,6 +57,7 @@
     <Compile Include="IFileReader.cs" />
     <Compile Include="ImportEntry.cs" />
     <Compile Include="ITenderRepository.cs" />
+    <Compile Include="LogConfigurator.cs" />
     <Compile Include="Tender.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="TenderImporter.cs" />

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using log4net;
-using log4net.Appender;
-using log4net.Config;
-using log4net.Layout;
 using Topshelf;
 
 namespace Overseer.Doorkeeper
@@ -14,7 +11,7 @@ namespace Overseer.Doorkeeper
 
         public static void Main()
         {
-            ConfigureLogger();
+            LogConfigurator.LogToConsoleAnd(@"c:\logs\ovrs-doorkeeper.log");
             log.InfoFormat("starting the service");
             HostFactory.Run(x =>
                             {
@@ -30,16 +27,6 @@ namespace Overseer.Doorkeeper
                                 x.SetDisplayName("Overseer Doorkeeper");
                                 x.SetServiceName("doorkeeper");
                             });
-        }
-
-        private static void ConfigureLogger()
-        {
-            var layout = new PatternLayout("%-5level: %message%newline");
-            var file = new RollingFileAppender {AppendToFile = false, File = @"c:\logs\doorkeeper.log", Layout = layout};
-            file.ActivateOptions();
-            var console = new ConsoleAppender {Layout = layout};
-            console.ActivateOptions();
-            BasicConfigurator.Configure(file, console);
         }
     }
 }
