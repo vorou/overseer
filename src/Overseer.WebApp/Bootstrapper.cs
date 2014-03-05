@@ -22,7 +22,7 @@ namespace Overseer.WebApp
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
             base.ConfigureApplicationContainer(container);
-            container.Register<ITenderRepository>((c, o) => new TenderRepository("overseer"));
+            container.Register<ITenderRepository>((c, o) => new TenderRepository("ovrs"));
         }
     }
 }
