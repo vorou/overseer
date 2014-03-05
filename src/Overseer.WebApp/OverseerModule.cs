@@ -12,8 +12,7 @@ namespace Overseer.WebApp
             Get["/"] = _ =>
                        {
                            var tenders = tenderRepo.GetMostExpensive();
-                           var mostRecent = tenderRepo.GetMostRecentTenderDate();
-                           var model = new HomeModel {Tenders = tenders.Select(Map), MostRecentTenderDate = mostRecent.ToString("M", new CultureInfo("ru-RU"))};
+                           var model = new HomeModel {Tenders = tenders.Select(Map)};
                            return View["index", model];
                        };
         }

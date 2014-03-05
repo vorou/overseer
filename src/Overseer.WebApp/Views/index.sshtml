@@ -31,7 +31,7 @@
         <div class="container">
 
             <div class="content">
-                <h3>Самые дорогие закупки за @Model.MostRecentTenderDate</h3>
+                <h3>Самые дорогие закупки за последнюю неделю</h3>
                 <table class="table table-striped">
                     @Each.Tenders
                     <tr><td class="col-sm-1"><b>@Current.Price</b></td><td class="col-sm-6">@Current.Name</td></tr>
