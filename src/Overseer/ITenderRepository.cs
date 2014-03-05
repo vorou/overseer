@@ -7,6 +7,6 @@ namespace Overseer
     {
         IEnumerable<Tender> GetMostExpensive(int limit = 5);
         void Save(Tender tender);
-        DateTime? GetMostRecentTenderDate();
+        DateTime GetMostRecentTenderDate();
     }
 }

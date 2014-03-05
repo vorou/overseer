@@ -19,7 +19,7 @@ namespace Overseer
             elastic.Index(tender);
         }
 
-        public DateTime? GetMostRecentTenderDate()
+        public DateTime GetMostRecentTenderDate()
         {
             return elastic.Search<Tender>(q=>q.MatchAll().SortDescending(d=>d.PublishDate)).Documents.First().PublishDate;
         }
