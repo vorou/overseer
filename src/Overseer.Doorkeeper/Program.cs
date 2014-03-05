@@ -1,4 +1,6 @@
-﻿using log4net;
+﻿using System;
+using System.Configuration;
+using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Layout;
@@ -18,7 +20,7 @@ namespace Overseer.Doorkeeper
                             {
                                 x.Service<Doorkeeper>(s =>
                                                       {
-                                                          s.ConstructUsing(name => new Doorkeeper());
+                                                          s.ConstructUsing(name => new Doorkeeper(new Uri(ConfigurationManager.AppSettings["ftp"])));
                                                           s.WhenStarted(tc => tc.Start());
                                                           s.WhenStopped(tc => tc.Stop());
                                                       });
@@ -32,7 +34,7 @@ namespace Overseer.Doorkeeper
 
         private static void ConfigureLogger()
         {
-            var layout = new PatternLayout("%-5level [%thread]: %message%newline");
+            var layout = new PatternLayout("%-5level: %message%newline");
             var file = new RollingFileAppender {AppendToFile = false, File = @"c:\logs\doorkeeper.log", Layout = layout};
             file.ActivateOptions();
             var console = new ConsoleAppender {Layout = layout};

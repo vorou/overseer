@@ -11,10 +11,10 @@ namespace Overseer.Doorkeeper
         private readonly Timer timer;
         private readonly TenderImporter importer;
 
-        public Doorkeeper()
+        public Doorkeeper(Uri ftp)
         {
             var index = "overseer";
-            importer = new TenderImporter(new FileReader(new Uri("ftp://ftp.zakupki.gov.ru"), index), new TenderRepository(index));
+            importer = new TenderImporter(new FileReader(ftp, index), new TenderRepository(index));
             timer = new Timer(TimeSpan.FromHours(1).TotalMilliseconds) {AutoReset = false};
             timer.Elapsed += (s, a) => RunImport();
         }
@@ -23,6 +23,7 @@ namespace Overseer.Doorkeeper
         {
             log.InfoFormat("time to import");
             importer.Import();
+            log.InfoFormat("finished importing");
             timer.Start();
         }
 
