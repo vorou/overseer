@@ -11,18 +11,12 @@ namespace Overseer.WebApp
     {
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
-            var layout = new PatternLayout("%-5level [%thread]: %message%newline");
-            var file = new FileAppender {AppendToFile = false, File = @"c:\logs\overseer-front.log", Layout = layout};
+            var layout = new PatternLayout("%-5level: %message%newline");
+            var file = new FileAppender {AppendToFile = false, File = @"c:\logs\ovrs-front.log", Layout = layout};
             file.ActivateOptions();
             var console = new ConsoleAppender {Layout = layout};
             console.ActivateOptions();
             BasicConfigurator.Configure(file, console);
-        }
-
-        protected override void ConfigureApplicationContainer(TinyIoCContainer container)
-        {
-            base.ConfigureApplicationContainer(container);
-            container.Register<ITenderRepository>((c, o) => new TenderRepository("ovrs"));
         }
     }
 }

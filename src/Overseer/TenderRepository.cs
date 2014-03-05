@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Nest;
 
 namespace Overseer
 {
     public class TenderRepository : ITenderRepository
     {
+        private readonly ILog log = LogManager.GetLogger(typeof (TenderRepository));
         private readonly ElasticClient elastic;
 
-        public TenderRepository(string index)
+        public TenderRepository()
         {
-            elastic = new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(index));
+            elastic = ElasticClientFactory.Create();
         }
 
         public void Save(Tender tender)
         {
-            elastic.Index(tender);
+            var response = elastic.Index(tender);
+            if (!response.OK)
+                log.ErrorFormat("failed to save tender: {0}", tender.Id);
         }
 
         public DateTime GetMostRecentTenderDate()
