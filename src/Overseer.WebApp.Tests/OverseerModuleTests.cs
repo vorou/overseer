@@ -1,5 +1,4 @@
-﻿using System;
-using FakeItEasy;
+﻿using FakeItEasy;
 using Nancy;
 using Nancy.Testing;
 using Ploeh.AutoFixture;
