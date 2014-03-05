@@ -40,18 +40,6 @@ namespace Overseer.WebApp.Tests
             AssertTenderViewContains(tender, tenderName);
         }
 
-        [Fact]
-        public void HomePage_Always_ContainsMostRecentTenderDate()
-        {
-            var repo = fixture.Freeze<ITenderRepository>();
-            A.CallTo(() => repo.GetMostRecentTenderDate()).Returns(new DateTime(1234, 12, 21));
-            var sut = CreateDefaultBrowser();
-
-            var actual = sut.Get("/").Body.AsString();
-
-            actual.ShouldContain("21 декабря");
-        }
-
         private void AssertTenderViewContains(Tender tender, string expected)
         {
             var repo = fixture.Freeze<ITenderRepository>();

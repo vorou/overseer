@@ -93,18 +93,30 @@ namespace Overseer.Tests
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(5)]
-        public void GetMostExpensive_MostRecentTenderWasPublishedSomeDaysAgo_ReturnsIt(int daysAgo)
+        [InlineData(7)]
+        public void GetMostExpensive_MostRecentTenderWasPublishedLessThenWeekAgo_ReturnsIt(int daysAgo)
         {
             var sut = CreateSut();
             var yesterdayTender = fixture.Create<Tender>();
-            yesterdayTender.PublishDate = DateTime.Now.AddDays(-daysAgo);
+            yesterdayTender.PublishDate = DateTime.Today.AddDays(-daysAgo);
             Save(sut, yesterdayTender);
 
             var actual = sut.GetMostExpensive();
 
             actual.Single().ShouldBe(yesterdayTender.Ish());
+        }
+
+        [Fact]
+        public void GetMostExpensive_MostRecentTenderIsMoreThanWeekAgo_ReturnsEmpty()
+        {
+            var sut = CreateSut();
+            var oldTender = fixture.Create<Tender>();
+            oldTender.PublishDate = DateTime.Today.AddDays(-8);
+            Save(sut, oldTender);
+
+            var actual = sut.GetMostExpensive();
+
+            actual.ShouldBeEmpty();
         }
 
         [Fact]

@@ -21,7 +21,7 @@ namespace Overseer
 
         public DateTime GetMostRecentTenderDate()
         {
-            return elastic.Search<Tender>(q=>q.MatchAll().SortDescending(d=>d.PublishDate)).Documents.First().PublishDate;
+            return elastic.Search<Tender>(q => q.MatchAll().SortDescending(d => d.PublishDate)).Documents.First().PublishDate;
         }
 
         public Tender GetById(string id)
@@ -36,22 +36,11 @@ namespace Overseer
 
         public IEnumerable<Tender> GetMostExpensive(int limit = 5)
         {
-            for (var daysAgo = 0; daysAgo <= 5; daysAgo++)
-            {
-                var resultThisDay =
-                    elastic.Search<Tender>(
-                                           q =>
-                                           q.Filter(
-                                                    f =>
-                                                    f.Range(
-                                                            r =>
-                                                            r.OnField(d => d.PublishDate)
-                                                             .GreaterOrEquals(DateTime.Today.AddDays(-daysAgo).ToUniversalTime())))
-                                            .SortDescending(t => t.TotalPrice)).Documents.Take(limit).ToList();
-                if (resultThisDay.Any())
-                    return resultThisDay;
-            }
-            return Enumerable.Empty<Tender>();
+            return
+                elastic.Search<Tender>(
+                                       q =>
+                                       q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today.AddDays(-7).ToUniversalTime())))
+                                        .SortDescending(t => t.TotalPrice)).Documents.Take(limit).ToList();
         }
     }
 }
