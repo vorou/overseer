@@ -12,6 +12,7 @@ namespace Overseer
         public TenderRepository()
         {
             elastic = ElasticClientFactory.Create();
+            elastic.MapFromAttributes<Tender>();
         }
 
         public void Save(Tender tender)

@@ -15,7 +15,9 @@ namespace Overseer
             log.DebugFormat("esHost = {0}", esHost);
             var esIndex = ConfigurationManager.AppSettings["esIndex"];
             log.DebugFormat("esIndex = {0}", esIndex);
-            return new ElasticClient(new ConnectionSettings(new Uri(esHost)).SetDefaultIndex(esIndex));
+            var client = new ElasticClient(new ConnectionSettings(new Uri(esHost)).SetDefaultIndex(esIndex));
+            client.CreateIndex(esIndex, new IndexSettings());
+            return client;
         }
     }
 }
