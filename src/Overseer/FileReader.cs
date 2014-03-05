@@ -16,10 +16,10 @@ namespace Overseer
         private readonly Uri ftp;
         private readonly ElasticClient elastic;
 
-        public FileReader(Uri ftp, string indexName)
+        public FileReader(Uri ftp)
         {
             this.ftp = ftp;
-            elastic = new ElasticClient(new ConnectionSettings(new Uri("http://localhost:9200")).SetDefaultIndex(indexName));
+            elastic = ElasticClientFactory.Create();
             log.InfoFormat("using {0}", ftp);
         }
 

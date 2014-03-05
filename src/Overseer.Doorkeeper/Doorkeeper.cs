@@ -14,7 +14,7 @@ namespace Overseer.Doorkeeper
         public Doorkeeper(Uri ftp)
         {
             var index = "overseer";
-            importer = new TenderImporter(new FileReader(ftp, index), new TenderRepository(index));
+            importer = new TenderImporter(new FileReader(ftp), new TenderRepository(index));
             timer = new Timer(TimeSpan.FromHours(1).TotalMilliseconds) {AutoReset = false};
             timer.Elapsed += (s, a) => RunImport();
         }

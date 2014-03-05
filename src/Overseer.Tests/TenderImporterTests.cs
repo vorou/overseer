@@ -97,18 +97,18 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Import_NoPublishDate_SetsToNull()
+        public void Import_NoPublishDate_SetsToMinDateTime()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>
 ");
-            AssertImportedTender(t => t.PublishDate == null);
+            AssertImportedTender(t => t.PublishDate == DateTime.MinValue);
         }
 
         [Fact]
-        public void Import_InvalidPublishDate_SetsToNull()
+        public void Import_InvalidPublishDate_SetsToMinDate()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -116,7 +116,7 @@ namespace Overseer.Tests
     <docPublishDate>panda</docPublishDate>
 </ns2:fcsNotificationZK>
 ");
-            AssertImportedTender(t => t.PublishDate == null);
+            AssertImportedTender(t => t.PublishDate == DateTime.MinValue);
         }
 
         [Fact]

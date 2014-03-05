@@ -150,7 +150,7 @@ namespace Overseer.Tests
 
         private FileReader CreateSut()
         {
-            return new FileReader(new Uri("ftp://localhost"), "overseer-test");
+            return new FileReader(new Uri("ftp://localhost"));
         }
 
         private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)
