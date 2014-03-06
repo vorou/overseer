@@ -53,6 +53,17 @@ namespace Overseer.WebApp.Tests
             AssertTenderViewContains(tender, regionName);
         }
 
+        [Fact]
+        public void HomePage_Always_ContainsLinkToTender()
+        {
+            var tender = fixture.Create<Tender>();
+            tender.Id = "panda";
+
+            var actual = GetRoot(tender);
+
+            actual.Body["a"].ShouldContainAttribute("href", "https://zakupki.kontur.ru/notification44?id=panda");
+        }
+
         private void AssertTenderViewContains(Tender tender, string expected)
         {
             var repo = fixture.Freeze<ITenderRepository>();
@@ -63,6 +74,18 @@ namespace Overseer.WebApp.Tests
             var actual = sut.Get("/").Body.AsString();
 
             actual.ShouldContain(expected);
+        }
+
+        private BrowserResponse GetRoot(Tender tender)
+        {
+            var repo = fixture.Freeze<ITenderRepository>();
+            var tenders = new[] { tender };
+            A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(tenders);
+            var sut = CreateDefaultBrowser();
+
+            var actual = sut.Get("/");
+
+            return actual;
         }
 
         private Browser CreateDefaultBrowser()
