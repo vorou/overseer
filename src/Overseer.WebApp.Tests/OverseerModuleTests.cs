@@ -39,6 +39,20 @@ namespace Overseer.WebApp.Tests
             AssertTenderViewContains(tender, tenderName);
         }
 
+        [Fact]
+        public void HomePage_Always_ContainsRegionNameForTender()
+        {
+            var regionNameService = fixture.Freeze<IRegionNameService>();
+            var regionId = fixture.Create<string>();
+            var regionName = fixture.Create<string>();
+            A.CallTo(() => regionNameService.GetName(regionId)).Returns(regionName);
+
+            var tender = fixture.Create<Tender>();
+            tender.Region = regionId;
+
+            AssertTenderViewContains(tender, regionName);
+        }
+
         private void AssertTenderViewContains(Tender tender, string expected)
         {
             var repo = fixture.Freeze<ITenderRepository>();
@@ -57,6 +71,7 @@ namespace Overseer.WebApp.Tests
                                {
                                    with.Module<OverseerModule>();
                                    with.Dependency(fixture.Create<ITenderRepository>());
+                                   with.Dependency(fixture.Create<IRegionNameService>());
                                });
         }
 

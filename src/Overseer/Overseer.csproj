@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsQuery">
+      <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -56,8 +59,10 @@
     <Compile Include="FileStatus.cs" />
     <Compile Include="IFileReader.cs" />
     <Compile Include="ImportEntry.cs" />
+    <Compile Include="IRegionNameService.cs" />
     <Compile Include="ITenderRepository.cs" />
     <Compile Include="LogConfigurator.cs" />
+    <Compile Include="RegionNameService.cs" />
     <Compile Include="Tender.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="TenderImporter.cs" />

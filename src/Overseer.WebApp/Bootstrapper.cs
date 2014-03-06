@@ -9,6 +9,7 @@ namespace Overseer.WebApp
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             LogConfigurator.LogToConsoleAnd(@"c:\logs\ovrs-webapp.log");
+            container.Resolve<IRegionNameService>().Fetch();
         }
     }
 }

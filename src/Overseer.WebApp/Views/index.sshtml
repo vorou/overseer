@@ -34,7 +34,7 @@
                 <h3>Самые дорогие закупки за последнюю неделю</h3>
                 <table class="table table-striped">
                     @Each.Tenders
-                    <tr><td class="col-sm-1"><b>@Current.Price</b></td><td class="col-sm-6">@Current.Name</td></tr>
+                    <tr><td class="col-sm-1"><b>@Current.Price</b></td><td class="col-sm-3">@Current.Name</td><td class="col-sm-1">@Current.RegionName</td></tr>
                     @EndEach
                 </table>
             </div>

@@ -7,8 +7,11 @@ namespace Overseer.WebApp
 {
     public class OverseerModule : NancyModule
     {
-        public OverseerModule(ITenderRepository tenderRepo)
+        private readonly IRegionNameService regionNameService;
+
+        public OverseerModule(ITenderRepository tenderRepo, IRegionNameService regionNameService)
         {
+            this.regionNameService = regionNameService;
             Get["/"] = _ =>
                        {
                            var tenders = tenderRepo.GetMostExpensive(10);
@@ -17,9 +20,14 @@ namespace Overseer.WebApp
                        };
         }
 
-        private static TenderModel Map(Tender t)
+        private TenderModel Map(Tender t)
         {
-            return new TenderModel {Name = t.Name, Price = t.TotalPrice.ToString("C", new CultureInfo("ru-RU"))};
+            return new TenderModel
+                   {
+                       Name = t.Name,
+                       Price = t.TotalPrice.ToString("C", new CultureInfo("ru-RU")),
+                       RegionName = regionNameService.GetName(t.Region)
+                   };
         }
     }
 }
