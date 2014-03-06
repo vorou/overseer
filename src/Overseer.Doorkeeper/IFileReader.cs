@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Overseer
+namespace Overseer.Doorkeeper
 {
     public interface IFileReader
     {

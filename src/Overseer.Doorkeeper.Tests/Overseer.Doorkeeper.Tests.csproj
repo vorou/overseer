@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5D73EF45-F0D3-41A2-9471-34D1F37A3E2E}</ProjectGuid>
+    <ProjectGuid>{54A39B55-E311-40D2-9A51-945990A6A312}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Overseer.Tests</RootNamespace>
-    <AssemblyName>Overseer.Tests</AssemblyName>
+    <RootNamespace>Overseer.Doorkeeper.Tests</RootNamespace>
+    <AssemblyName>Overseer.Doorkeeper.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,27 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FakeItEasy, Version=1.17.0.0, Culture=neutral, PublicKeyToken=eff28e2146d5fd2c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="FakeItEasy">
       <HintPath>..\packages\FakeItEasy.1.17.0\lib\net40\FakeItEasy.dll</HintPath>
-    </Reference>
-    <Reference Include="Nest">
-      <HintPath>..\packages\NEST.0.12.0.0\lib\NET4\Nest.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ploeh.AutoFixture">
       <HintPath>..\packages\AutoFixture.3.16.5\lib\net40\Ploeh.AutoFixture.dll</HintPath>
     </Reference>
     <Reference Include="Ploeh.AutoFixture.AutoFakeItEasy">
       <HintPath>..\packages\AutoFixture.AutoFakeItEasy.3.16.5\lib\net40\Ploeh.AutoFixture.AutoFakeItEasy.dll</HintPath>
-    </Reference>
-    <Reference Include="Ploeh.AutoFixture.Xunit">
-      <HintPath>..\packages\AutoFixture.Xunit.3.16.5\lib\net40\Ploeh.AutoFixture.Xunit.dll</HintPath>
-    </Reference>
-    <Reference Include="Ploeh.SemanticComparison">
-      <HintPath>..\packages\SemanticComparison.3.16.5\lib\net40\Ploeh.SemanticComparison.dll</HintPath>
     </Reference>
     <Reference Include="Shouldly">
       <HintPath>..\packages\Shouldly.1.1.1.1\lib\35\Shouldly.dll</HintPath>
@@ -59,6 +46,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
     <Reference Include="xunit">
       <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
@@ -70,18 +62,20 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoFakeAttribute.cs" />
-    <Compile Include="LikenessExtensions.cs" />
-    <Compile Include="RegionNameServiceTests.cs" />
-    <Compile Include="TenderRepositoryTests.cs" />
+    <Compile Include="FileReaderTests.cs" />
+    <Compile Include="TenderImporterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Overseer.Doorkeeper\Overseer.Doorkeeper.csproj">
+      <Project>{043FE83E-4567-4151-AEA4-8329EBE5B0F6}</Project>
+      <Name>Overseer.Doorkeeper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Overseer\Overseer.csproj">
-      <Project>{8081c50c-f032-4d5a-8630-b85df58c9f55}</Project>
+      <Project>{8081C50C-F032-4D5A-8630-B85DF58C9F55}</Project>
       <Name>Overseer</Name>
     </ProjectReference>
   </ItemGroup>

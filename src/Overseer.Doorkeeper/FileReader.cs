@@ -7,7 +7,7 @@ using System.Net;
 using log4net;
 using Nest;
 
-namespace Overseer
+namespace Overseer.Doorkeeper
 {
     public class FileReader : IFileReader
     {

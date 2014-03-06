@@ -6,7 +6,7 @@ using Shouldly;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Overseer.Tests
+namespace Overseer.Doorkeeper.Tests
 {
     public class FileReaderTests
     {

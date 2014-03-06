@@ -6,7 +6,7 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Overseer.Tests
+namespace Overseer.Doorkeeper.Tests
 {
     public class TenderImporterTests
     {
