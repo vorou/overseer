@@ -3,7 +3,7 @@ using System.Configuration;
 using log4net;
 using Nest;
 
-namespace Overseer
+namespace Overseer.Common
 {
     public static class ElasticClientFactory
     {

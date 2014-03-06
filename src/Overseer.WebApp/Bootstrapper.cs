@@ -1,6 +1,7 @@
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
+using Overseer.Common;
 
 namespace Overseer.WebApp
 {

@@ -100,9 +100,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Overseer\Overseer.csproj">
+    <ProjectReference Include="..\Overseer.Common\Overseer.Common.csproj">
       <Project>{8081C50C-F032-4D5A-8630-B85DF58C9F55}</Project>
-      <Name>Overseer</Name>
+      <Name>Overseer.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Overseer
+namespace Overseer.Common
 {
     public interface ITenderRepository
     {

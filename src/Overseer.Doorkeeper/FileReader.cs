@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using log4net;
 using Nest;
+using Overseer.Common;
 
 namespace Overseer.Doorkeeper
 {

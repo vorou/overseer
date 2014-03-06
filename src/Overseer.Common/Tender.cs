@@ -1,7 +1,7 @@
 using System;
 using Nest;
 
-namespace Overseer
+namespace Overseer.Common
 {
     public class Tender
     {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using log4net;
+using Overseer.Common;
 
 namespace Overseer.Doorkeeper
 {

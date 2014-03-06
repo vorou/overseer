@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nest;
 
-namespace Overseer
+namespace Overseer.Common
 {
     public class TenderRepository : ITenderRepository
     {

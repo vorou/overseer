@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using Nancy;
 using Nancy.Testing;
+using Overseer.Common;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Shouldly;

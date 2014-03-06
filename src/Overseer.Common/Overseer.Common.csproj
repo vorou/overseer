@@ -7,8 +7,8 @@
     <ProjectGuid>{8081C50C-F032-4D5A-8630-B85DF58C9F55}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Overseer</RootNamespace>
-    <AssemblyName>Overseer</AssemblyName>
+    <RootNamespace>Overseer.Common</RootNamespace>
+    <AssemblyName>Overseer.Common</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using log4net;
+using Overseer.Common;
 using Topshelf;
 
 namespace Overseer.Doorkeeper

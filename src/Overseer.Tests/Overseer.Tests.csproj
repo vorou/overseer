@@ -79,9 +79,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Overseer\Overseer.csproj">
+    <ProjectReference Include="..\Overseer.Common\Overseer.Common.csproj">
       <Project>{8081c50c-f032-4d5a-8630-b85df58c9f55}</Project>
-      <Name>Overseer</Name>
+      <Name>Overseer.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

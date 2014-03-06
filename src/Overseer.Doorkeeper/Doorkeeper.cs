@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Timers;
 using log4net;
+using Overseer.Common;
 
 namespace Overseer.Doorkeeper
 {

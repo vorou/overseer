@@ -2,7 +2,7 @@
 using log4net.Config;
 using log4net.Layout;
 
-namespace Overseer
+namespace Overseer.Common
 {
     public class LogConfigurator
     {
