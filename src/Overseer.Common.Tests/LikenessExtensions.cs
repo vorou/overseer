@@ -1,6 +1,6 @@
 ﻿using Ploeh.SemanticComparison.Fluent;
 
-namespace Overseer.Tests
+namespace Overseer.Common.Tests
 {
     public static class LikenessExtensions
     {

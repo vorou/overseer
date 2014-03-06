@@ -4,7 +4,7 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Common", "Overseer.Common\Overseer.Common.csproj", "{8081C50C-F032-4D5A-8630-B85DF58C9F55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Tests", "Overseer.Tests\Overseer.Tests.csproj", "{5D73EF45-F0D3-41A2-9471-34D1F37A3E2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.Common.Tests", "Overseer.Common.Tests\Overseer.Common.Tests.csproj", "{5D73EF45-F0D3-41A2-9471-34D1F37A3E2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overseer.WebApp.Tests", "Overseer.WebApp.Tests\Overseer.WebApp.Tests.csproj", "{F2CCF21B-0C06-4466-8F94-0CE87EDBC023}"
 EndProject

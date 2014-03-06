@@ -2,7 +2,7 @@
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Ploeh.AutoFixture.Xunit;
 
-namespace Overseer.Tests
+namespace Overseer.Common.Tests
 {
     public class AutoFakeAttribute : AutoDataAttribute
     {

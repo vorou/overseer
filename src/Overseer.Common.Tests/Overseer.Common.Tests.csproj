@@ -7,8 +7,8 @@
     <ProjectGuid>{5D73EF45-F0D3-41A2-9471-34D1F37A3E2E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Overseer.Tests</RootNamespace>
-    <AssemblyName>Overseer.Tests</AssemblyName>
+    <RootNamespace>Overseer.Common.Tests</RootNamespace>
+    <AssemblyName>Overseer.Common.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
