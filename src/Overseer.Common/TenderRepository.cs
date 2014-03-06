@@ -43,5 +43,10 @@ namespace Overseer.Common
                                        q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today.AddDays(-7).ToUniversalTime())))
                                         .SortDescending(t => t.TotalPrice)).Documents.Take(limit).ToList();
         }
+
+        public IEnumerable<Tender> Find(string query)
+        {
+            return elastic.Search<Tender>(q => q.QueryString(query)).Documents;
+        }
     }
 }

@@ -131,6 +131,51 @@ namespace Overseer.Common.Tests
             actual.ShouldBe(date);
         }
 
+        [Fact]
+        public void Find_ExactMatch_FindsTender()
+        {
+            var term = "panda";
+            var tender = fixture.Create<Tender>();
+            tender.Name = term;
+            var sut = CreateSut();
+            Save(sut, tender);
+
+            var actual = sut.Find(term);
+
+            actual.Single().ShouldBe(tender.Ish());
+        }
+
+        [Fact]
+        public void Find_TenderDoesntHaveTheTerm_ReturnsEmpty()
+        {
+            var tender = fixture.Create<Tender>();
+            tender.Name = "fox";
+            var sut = CreateSut();
+            Save(sut, tender);
+
+            var actual = sut.Find("panda");
+
+            actual.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Find_TwoInstancesOfTheTerm_ReturnsMoreRelevantFirst()
+        {
+            var sut = CreateSut();
+            var lessRelevant = fixture.Create<Tender>();
+            lessRelevant.Name = "panda";
+            Save(sut, lessRelevant);
+            var moreRelevant = fixture.Create<Tender>();
+            moreRelevant.Name = "panda panda";
+            Save(sut, moreRelevant);
+
+            var actual = sut.Find("panda");
+
+            actual.First().ShouldBe(moreRelevant.Ish());
+        }
+
+
+
         private static TenderRepository CreateSut()
         {
             return new TenderRepository();
