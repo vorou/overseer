@@ -8,12 +8,12 @@ namespace Overseer
     {
         public static void LogToConsoleAnd(string logPath)
         {
-            var layout = new PatternLayout("%-5level [%d{HH:mm:ss}] %message%newline");
+            var layout = new PatternLayout("%-5level [%d{HH:mm:ss}] %-20.20logger{1}: %message%newline");
             var file = new RollingFileAppender {AppendToFile = false, File = logPath, Layout = layout};
             file.ActivateOptions();
             var console = new ConsoleAppender {Layout = layout};
             console.ActivateOptions();
-            BasicConfigurator.Configure(file, console);
+            BasicConfigurator.Configure(console, file);
         }
     }
 }
