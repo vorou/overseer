@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using CsQuery;
+using log4net;
 
 namespace Overseer
 {
     public class RegionNameService : IRegionNameService
     {
+        private readonly ILog log = LogManager.GetLogger(typeof (RegionNameService));
         private readonly Dictionary<string, string> regionIdToName = new Dictionary<string, string>();
 
         public void Fetch()
@@ -26,8 +28,15 @@ namespace Overseer
 
         public string GetName(string id)
         {
+            if (id == null)
+                throw new ArgumentNullException("id");
             if (!regionIdToName.Any())
                 throw new InvalidOperationException("no services were fetched");
+            if (!regionIdToName.ContainsKey(id))
+            {
+                log.WarnFormat("cant find region id={0}", id);
+                return id;
+            }
             return regionIdToName[id];
         }
     }

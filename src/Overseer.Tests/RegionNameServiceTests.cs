@@ -28,5 +28,27 @@ namespace Overseer.Tests
 
             Should.Throw<InvalidOperationException>(() => sut.GetName("qqq"));
         }
+
+        [Fact]
+        public void GetName_UnknownRegion_ReturnsId()
+        {
+            var sut = new RegionNameService();
+            sut.Fetch();
+            var unknownRegionId = "panda";
+
+            var actual = sut.GetName(unknownRegionId);
+
+            actual.ShouldBe(unknownRegionId);
+        }
+
+        [Fact]
+        public void GetName_NullId_ArgumentNullException()
+        {
+            var sut = new RegionNameService();
+            sut.Fetch();
+
+            var e = Should.Throw<ArgumentNullException>(() => sut.GetName(null));
+            e.Message.ShouldContain("id");
+        }
     }
 }
