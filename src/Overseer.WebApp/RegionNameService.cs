@@ -4,7 +4,7 @@ using System.Linq;
 using CsQuery;
 using log4net;
 
-namespace Overseer
+namespace Overseer.WebApp
 {
     public class RegionNameService : IRegionNameService
     {

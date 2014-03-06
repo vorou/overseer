@@ -3,7 +3,7 @@ using Shouldly;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Overseer.Tests
+namespace Overseer.WebApp.Tests
 {
     public class RegionNameServiceTests
     {

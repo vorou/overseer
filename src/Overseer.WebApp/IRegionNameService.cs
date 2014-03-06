@@ -1,4 +1,4 @@
-namespace Overseer
+namespace Overseer.WebApp
 {
     public interface IRegionNameService
     {

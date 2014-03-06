@@ -55,10 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ElasticClientFactory.cs" />
-    <Compile Include="IRegionNameService.cs" />
     <Compile Include="ITenderRepository.cs" />
     <Compile Include="LogConfigurator.cs" />
-    <Compile Include="RegionNameService.cs" />
     <Compile Include="Tender.cs" />
     <Compile Include="TenderRepository.cs" />
   </ItemGroup>

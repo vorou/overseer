@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="AutoFakeAttribute.cs" />
     <Compile Include="LikenessExtensions.cs" />
-    <Compile Include="RegionNameServiceTests.cs" />
     <Compile Include="TenderRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
