@@ -141,11 +141,12 @@ namespace Overseer.Tests
         }
 
         [Fact]
-        public void Import_UnknownRegion_SetsRegionToNull()
+        public void Import_UnknownRegion_ShouldNotSave()
         {
             Import(validXml, "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
 
-            AssertImportedTender(t => t.Region == null);
+            var repo = fixture.Create<ITenderRepository>();
+            A.CallTo(()=>repo.Save(A<Tender>._)).MustNotHaveHappened();
         }
 
         private void Import(string xml, string path = null)

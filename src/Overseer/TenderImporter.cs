@@ -138,8 +138,12 @@ namespace Overseer
                     continue;
 
                 var regionName = new Uri(file.Path).Segments[2].TrimEnd('/');
-                if (folderNameToRegionId.ContainsKey(regionName))
-                    result.Region = folderNameToRegionId[regionName];
+                if (!folderNameToRegionId.ContainsKey(regionName))
+                {
+                    log.WarnFormat("unkown region {0}", regionName);
+                    continue;
+                }
+                result.Region = folderNameToRegionId[regionName];
 
                 var name = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "purchaseObjectInfo");
                 if (name != null)
