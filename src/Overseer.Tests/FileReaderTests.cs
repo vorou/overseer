@@ -148,6 +148,18 @@ namespace Overseer.Tests
             actual.Count().ShouldBe(1);
         }
 
+        [Fact]
+        public void Read_Always_IgnoresLogsDir()
+        {
+            var logsDir = @"fcs_regions\_logs\notifications\currMonth\";
+            CreateZipAtFtp(logsDir, "some.zip", Path.GetRandomFileName());
+            var sut = CreateSut();
+
+            var actual = sut.ReadNewFiles();
+
+            actual.ShouldBeEmpty();
+        }
+
         private FileReader CreateSut()
         {
             return new FileReader(new Uri("ftp://localhost"));

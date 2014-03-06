@@ -14,6 +14,7 @@ namespace Overseer.Tests
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
 </ns2:fcsNotificationZK>";
+        private const string ValidUri = "ftp://valid/region/Adygeja_Resp";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
         [Fact]
@@ -123,7 +124,7 @@ namespace Overseer.Tests
         [Fact]
         public void Import_Succeeded_MarksAsImported()
         {
-            var src = "path";
+            var src = ValidUri;
             Import(validXml, src);
 
             var reader = fixture.Create<IFileReader>();
@@ -149,7 +150,7 @@ namespace Overseer.Tests
             A.CallTo(()=>repo.Save(A<Tender>._)).MustNotHaveHappened();
         }
 
-        private void Import(string xml, string path = null)
+        private void Import(string xml, string path = ValidUri)
         {
             fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IFileReader>();
