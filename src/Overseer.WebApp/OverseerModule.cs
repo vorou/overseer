@@ -16,7 +16,7 @@ namespace Overseer.WebApp
             this.regionNameService = regionNameService;
             Get["/"] = _ =>
                        {
-                           var tenders = tenderRepo.GetMostExpensive(10);
+                           var tenders = tenderRepo.GetMostExpensive(30);
                            var model = new HomeModel {Tenders = tenders.Select(Map)};
                            return View["index", model];
                        };
