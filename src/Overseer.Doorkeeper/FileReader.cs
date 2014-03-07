@@ -35,9 +35,13 @@ namespace Overseer.Doorkeeper
                         .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
                 {
                     ZipArchive zip;
+                    var content = GetFile(zipUri);
+                    if (content == null)
+                        continue;
+
                     try
                     {
-                        zip = new ZipArchive(new MemoryStream(GetFile(zipUri)));
+                        zip = new ZipArchive(new MemoryStream(content));
                     }
                     catch (InvalidDataException)
                     {
@@ -98,15 +102,19 @@ namespace Overseer.Doorkeeper
             byte[] newFileData;
             try
             {
-                newFileData = request.DownloadData(uri);
+                newFileData = GetFileCore(request, uri);
             }
-                //TODO: how to test this?
             catch (WebException)
             {
                 log.ErrorFormat("failed to download file {0}", uri);
-                throw;
+                return null;
             }
             return newFileData;
+        }
+
+        protected virtual byte[] GetFileCore(WebClient request, Uri uri)
+        {
+            return request.DownloadData(uri);
         }
 
         public void MarkImported(string src)

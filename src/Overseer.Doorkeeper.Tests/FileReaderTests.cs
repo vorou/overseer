@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using Shouldly;
 using Xunit;
 using Xunit.Extensions;
@@ -158,6 +159,35 @@ namespace Overseer.Doorkeeper.Tests
             var actual = sut.ReadNewFiles();
 
             actual.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Read_FailedToDownloadFile_ReturnsEmpty()
+        {
+            var sut = new FileReaderTestable(new Uri("ftp://localhost"));
+            sut.GetFileCoreBody = (client, uri) =>
+                                  {
+                                      throw new WebException();
+                                  };
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some.zip", Path.GetRandomFileName());
+
+            var actual = sut.ReadNewFiles();
+
+            actual.ShouldBeEmpty();
+        }
+
+        private class FileReaderTestable : FileReader
+        {
+            public FileReaderTestable(Uri ftp) : base(ftp)
+            {
+            }
+
+            public Func<WebClient, Uri, byte[]> GetFileCoreBody { private get; set; }
+
+            protected override byte[] GetFileCore(WebClient request, Uri uri)
+            {
+                return GetFileCoreBody(request, uri);
+            }
         }
 
         private FileReader CreateSut()
