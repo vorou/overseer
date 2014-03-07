@@ -17,14 +17,15 @@ namespace Overseer.WebApp
             Get["/"] = _ =>
                        {
                            var tenders = tenderRepo.GetMostExpensive(30);
-                           var model = new HomeModel {Tenders = tenders.Select(Map)};
+                           var model = new GridModel {Tenders = tenders.Select(Map)};
                            return View["index", model];
                        };
             Get["/tenders"] = _ =>
                               {
-                                  var tenders = tenderRepo.Find(null);
-                                  var model = new HomeModel {Tenders = tenders.Select(Map)};
-                                  return View["index", model];
+                                  var query = (string) Request.Query.q;
+                                  var tenders = tenderRepo.Find(query);
+                                  var model = new GridModel {Tenders = tenders.Select(Map)};
+                                  return View["results", model];
                               };
         }
 

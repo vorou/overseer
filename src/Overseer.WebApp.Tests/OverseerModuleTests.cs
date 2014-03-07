@@ -90,6 +90,21 @@ namespace Overseer.WebApp.Tests
             actual.Body["a"].AnyShouldContain(tenderName);
         }
 
+        [Fact]
+        public void Tenders_QueryIsPassed_ContainsResult()
+        {
+            var tenderName = fixture.Create<string>();
+            var tender = fixture.Create<Tender>();
+            tender.Name = tenderName;
+            var repo = fixture.Freeze<ITenderRepository>();
+            A.CallTo(() => repo.Find("panda")).Returns(new[] {tender});
+            var sut = CreateDefaultBrowser();
+
+            var actual = sut.Get("/tenders", with => with.Query("q", "panda"));
+
+            actual.Body["a"].AnyShouldContain(tenderName);
+        }
+
         private void AssertTenderViewContains(Tender tender, string expected)
         {
             var repo = fixture.Freeze<ITenderRepository>();
@@ -105,7 +120,7 @@ namespace Overseer.WebApp.Tests
         private BrowserResponse GetRoot(Tender tender)
         {
             var repo = fixture.Freeze<ITenderRepository>();
-            var tenders = new[] { tender };
+            var tenders = new[] {tender};
             A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(tenders);
             var sut = CreateDefaultBrowser();
 

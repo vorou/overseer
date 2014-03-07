@@ -2,7 +2,7 @@
 
 namespace Overseer.WebApp.Models
 {
-    public class HomeModel
+    public class GridModel
     {
         public IEnumerable<TenderModel> Tenders { get; set; }
     }

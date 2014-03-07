@@ -133,11 +133,14 @@
     <Content Include="Web.config" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\aws.pubxml" />
+    <Content Include="Views\results.sshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="IRegionNameService.cs" />
-    <Compile Include="Models\HomeModel.cs" />
+    <Compile Include="Models\GridModel.cs" />
     <Compile Include="Models\TenderModel.cs" />
     <Compile Include="OverseerModule.cs" />
     <Compile Include="RegionNameService.cs" />
