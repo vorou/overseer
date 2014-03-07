@@ -84,37 +84,37 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\scripts\bootstrap.js">
+    <Content Include="Content\js\bootstrap.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\scripts\bootstrap.min.js">
+    <Content Include="Content\js\bootstrap.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Content\scripts\jquery-1.9.0.intellisense.js">
+    <None Include="Content\js\jquery-1.9.0.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Content\scripts\jquery-1.9.0.js">
+    <Content Include="Content\js\jquery-1.9.0.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\scripts\jquery-1.9.0.min.js">
+    <Content Include="Content\js\jquery-1.9.0.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap-theme.css">
+    <Content Include="Content\css\bootstrap-theme.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap-theme.min.css">
+    <Content Include="Content\css\bootstrap-theme.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap.css">
+    <Content Include="Content\css\bootstrap.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap.min.css">
+    <Content Include="Content\css\bootstrap.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap-theme.css.map">
+    <Content Include="Content\css\bootstrap-theme.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\bootstrap.css.map">
+    <Content Include="Content\css\bootstrap.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot">
@@ -126,10 +126,10 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\scripts\jquery-1.9.0.min.map">
+    <Content Include="Content\js\jquery-1.9.0.min.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\styles\styles.css" />
+    <Content Include="Content\css\styles.css" />
     <Content Include="Web.config" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\aws.pubxml" />
