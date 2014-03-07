@@ -21,7 +21,7 @@
     </head>
 
     <body>
-        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
                     <span class="navbar-brand">
@@ -31,13 +31,13 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container main">
 
             <div>
                 <h3>Самые дорогие закупки за последнюю неделю</h3>
                 <table class="table table-striped">
                     @Each.Tenders
-                    <tr><td class="col-sm-1"><b>@Current.Price</b></td><td class="col-sm-3"><a href="@Current.Url" target="_blank">@Current.Name</a></td><td class="col-sm-1">@Current.RegionName</td></tr>
+                    <tr><td class="col-sm-1 price">@Current.Price</td><td class="col-sm-4"><a href="@Current.Url" target="_blank">@Current.Name</a></td><td class="col-sm-1">@Current.RegionName</td></tr>
                     @EndEach
                 </table>
             </div>
