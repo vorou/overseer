@@ -30,7 +30,7 @@
 
         <div class="container">
 
-            <div class="content">
+            <div>
                 <h3>Самые дорогие закупки за последнюю неделю</h3>
                 <table class="table table-striped">
                     @Each.Tenders
@@ -42,6 +42,6 @@
         </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <script src="/Content/styles/bootstrap.min.js"></script>
+        <script src="/Content/scripts/bootstrap.min.js"></script>
     </body>
 </html>
