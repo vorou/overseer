@@ -41,7 +41,7 @@ namespace Overseer.Common
                 elastic.Search<Tender>(
                                        q =>
                                        q.Filter(f => f.Range(r => r.OnField(d => d.PublishDate).GreaterOrEquals(DateTime.Today.AddDays(-7).ToUniversalTime())))
-                                        .SortDescending(t => t.TotalPrice)).Documents.Take(limit).ToList();
+                                        .SortDescending(t => t.TotalPrice).Size(limit)).Documents.ToList();
         }
 
         public IEnumerable<Tender> Find(string query)

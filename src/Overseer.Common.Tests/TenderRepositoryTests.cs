@@ -174,7 +174,16 @@ namespace Overseer.Common.Tests
             actual.First().ShouldBe(moreRelevant.Ish());
         }
 
+        [Fact]
+        public void GetMostExpensive_LimitIsLessThenTotal_ReturnsProperNumber()
+        {
+            var sut = CreateSut();
+            Enumerable.Range(0, 12).ToList().ForEach(_ => Save(sut,CreateActiveTender()));
 
+            var actual = sut.GetMostExpensive(11);
+
+            actual.Count().ShouldBe(11);
+        }
 
         private static TenderRepository CreateSut()
         {
