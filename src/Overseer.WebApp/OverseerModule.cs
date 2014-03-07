@@ -20,6 +20,12 @@ namespace Overseer.WebApp
                            var model = new HomeModel {Tenders = tenders.Select(Map)};
                            return View["index", model];
                        };
+            Get["/tenders"] = _ =>
+                              {
+                                  var tenders = tenderRepo.Find(null);
+                                  var model = new HomeModel {Tenders = tenders.Select(Map)};
+                                  return View["index", model];
+                              };
         }
 
         private TenderModel Map(Tender t)

@@ -8,5 +8,6 @@ namespace Overseer.Common
         IEnumerable<Tender> GetMostExpensive(int limit = 5);
         void Save(Tender tender);
         DateTime GetMostRecentTenderDate();
+        IEnumerable<Tender> Find(string query);
     }
 }

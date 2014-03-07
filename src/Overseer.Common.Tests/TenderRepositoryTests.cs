@@ -178,11 +178,22 @@ namespace Overseer.Common.Tests
         public void GetMostExpensive_LimitIsLessThenTotal_ReturnsProperNumber()
         {
             var sut = CreateSut();
-            Enumerable.Range(0, 12).ToList().ForEach(_ => Save(sut,CreateActiveTender()));
+            Enumerable.Range(0, 12).ToList().ForEach(_ => Save(sut, CreateActiveTender()));
 
             var actual = sut.GetMostExpensive(11);
 
             actual.Count().ShouldBe(11);
+        }
+
+        [Fact]
+        public void Find_NullQuery_EverytingIsEveryting()
+        {
+            var sut = CreateSut();
+            Save(sut, CreateActiveTender());
+
+            var actual = sut.Find(null);
+
+            actual.ShouldNotBeEmpty();
         }
 
         private static TenderRepository CreateSut()

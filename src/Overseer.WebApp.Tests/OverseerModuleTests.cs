@@ -12,7 +12,7 @@ namespace Overseer.WebApp.Tests
     public class OverseerModuleTests
     {
         [Fact]
-        public void HomePage_Always_Responses()
+        public void Root_Always_Responses()
         {
             var sut = CreateDefaultBrowser();
 
@@ -20,7 +20,7 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void HomePage_Always_ContainsPriceForMostExpensiveTender()
+        public void Root_Always_ContainsPriceForMostExpensiveTender()
         {
             var totalPrice = 123456.78M;
             var tender = fixture.Create<Tender>();
@@ -31,7 +31,7 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void HomePage_Always_ContainsNameForMostExpensiveTender()
+        public void Root_Always_ContainsNameForMostExpensiveTender()
         {
             var tenderName = fixture.Create<string>();
             var tender = fixture.Create<Tender>();
@@ -41,7 +41,7 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void HomePage_Always_ContainsRegionNameForTender()
+        public void Root_Always_ContainsRegionNameForTender()
         {
             var regionNameService = fixture.Freeze<IRegionNameService>();
             var regionId = fixture.Create<string>();
@@ -55,7 +55,7 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void HomePage_Always_ContainsLinkToTender()
+        public void Root_Always_ContainsLinkToTender()
         {
             var tender = fixture.Create<Tender>();
             tender.Id = "panda";
@@ -63,6 +63,31 @@ namespace Overseer.WebApp.Tests
             var actual = GetRoot(tender);
 
             actual.Body["a"].ShouldContainAttribute("href", "https://zakupki.kontur.ru/notification44?id=panda");
+        }
+
+        [Fact]
+        public void Tenders_Always_ShouldRespond()
+        {
+            var sut = CreateDefaultBrowser();
+
+            var actual = sut.Get("/tenders");
+
+            actual.StatusCode.ShouldBe(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public void Tenders_Always_ContainsTender()
+        {
+            var tenderName = fixture.Create<string>();
+            var tender = fixture.Create<Tender>();
+            tender.Name = tenderName;
+            var repo = fixture.Freeze<ITenderRepository>();
+            A.CallTo(() => repo.Find(null)).Returns(new[] {tender});
+            var sut = CreateDefaultBrowser();
+
+            var actual = sut.Get("/tenders");
+
+            actual.Body["a"].AnyShouldContain(tenderName);
         }
 
         private void AssertTenderViewContains(Tender tender, string expected)
