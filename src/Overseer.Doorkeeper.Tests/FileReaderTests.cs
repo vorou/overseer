@@ -176,6 +176,40 @@ namespace Overseer.Doorkeeper.Tests
             actual.ShouldBeEmpty();
         }
 
+        [Fact]
+        public void Read_FailedToDownloadFile_ContinueToNextFile()
+        {
+            var sut = new FileReaderTestable(new Uri("ftp://localhost"));
+            var shouldThrow = true;
+            sut.GetFileCoreBody = (client, uri) =>
+                                  {
+                                      if (shouldThrow)
+                                      {
+                                          shouldThrow = false;
+                                          throw new WebException();
+                                      }
+                                      return GetValidNonEmptyZipContent();
+                                  };
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some1.zip", Path.GetRandomFileName());
+            CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some2.zip", Path.GetRandomFileName());
+
+            var actual = sut.ReadNewFiles();
+
+            actual.Count().ShouldBe(1);
+        }
+
+        private static byte[] GetValidNonEmptyZipContent()
+        {
+            using (var zipContent = new MemoryStream())
+            {
+                using (var zip = new ZipArchive(zipContent, ZipArchiveMode.Create))
+                {
+                    zip.CreateEntry("entry");
+                }
+                return zipContent.ToArray();
+            }
+        }
+
         private class FileReaderTestable : FileReader
         {
             public FileReaderTestable(Uri ftp) : base(ftp)
