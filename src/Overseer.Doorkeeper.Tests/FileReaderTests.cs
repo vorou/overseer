@@ -9,6 +9,7 @@ using Xunit.Extensions;
 
 namespace Overseer.Doorkeeper.Tests
 {
+    //TODO: extract files-related stuff to separate class
     public class FileReaderTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Tests\ftp";
