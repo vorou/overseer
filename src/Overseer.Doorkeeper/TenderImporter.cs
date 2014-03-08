@@ -14,7 +14,7 @@ namespace Overseer.Doorkeeper
         private readonly ILog log = LogManager.GetLogger(typeof (TenderImporter));
         private readonly IFileReader reader;
         private readonly ITenderRepository repo;
-        private int countImported = 0;
+        private int countImported;
         private readonly Dictionary<string, string> folderNameToRegionId = new Dictionary<string, string>
                                                                            {
                                                                                {"Adygeja_Resp", "01"},
