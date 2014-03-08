@@ -58,7 +58,7 @@ namespace Overseer.Doorkeeper
                         var fullUri = zipUri + "/" + zipEntry;
                         if (elastic.Get<ImportEntry>(fullUri) != null)
                         {
-                            log.InfoFormat("already imported, skipping {0}", fullUri);
+                            log.InfoFormat("already imported, skipping {0}", fullUri.Substring(fullUri.Length - 10));
                             continue;
                         }
 
