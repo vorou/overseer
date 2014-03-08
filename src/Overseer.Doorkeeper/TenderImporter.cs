@@ -150,9 +150,14 @@ namespace Overseer.Doorkeeper
                 if (name != null)
                     result.Name = name.Value;
 
-                var priceElement = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "maxPrice");
-                if (priceElement != null)
-                    result.TotalPrice = decimal.Parse(priceElement.Value);
+                var differentPrices = xDoc.Descendants().Where(el => el.Name.LocalName == "maxPrice").GroupBy(el => el.Value).ToList();
+                if (differentPrices.Count() > 1)
+                {
+                    log.WarnFormat("multiple price elements with different price found in {0}", file.Uri);
+                    continue;
+                }
+                if (differentPrices.Count() == 1)
+                    result.TotalPrice = decimal.Parse(differentPrices.First().Key);
 
                 var firstOrDefault = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "docPublishDate");
                 if (firstOrDefault != null)

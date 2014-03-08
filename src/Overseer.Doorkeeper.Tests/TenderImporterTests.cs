@@ -60,7 +60,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Import_FewMaxPriceElements_UsesFirst()
+        public void Import_FewMaxPriceElementsWithDifferentPrices_DontImport()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -70,6 +70,22 @@ namespace Overseer.Doorkeeper.Tests
     </lot>
     <lot>
         <maxPrice>2.2</maxPrice>
+    </lot>
+</ns2:fcsNotificationZK>");
+            AssertNothingWasSaved();
+        }
+
+        [Fact]
+        public void Import_FewMaxPriceElementsWithSamePrice_TakeThePriceOnce()
+        {
+            Import(@"
+<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
+    <purchaseNumber>0361200002614001321</purchaseNumber>
+    <lot>
+        <maxPrice>1.1</maxPrice>
+    </lot>
+    <lot>
+        <maxPrice>1.1</maxPrice>
     </lot>
 </ns2:fcsNotificationZK>");
             AssertImportedTender(t => t.TotalPrice == 1.1M);
