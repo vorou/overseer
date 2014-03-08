@@ -16,7 +16,8 @@ namespace Overseer.Common
             var esIndex = ConfigurationManager.AppSettings["esIndex"];
             log.DebugFormat("esIndex = {0}", esIndex);
             var client = new ElasticClient(new ConnectionSettings(new Uri(esHost)).SetDefaultIndex(esIndex));
-            client.CreateIndex(esIndex, new IndexSettings());
+            if (!client.IndexExists(esIndex).Exists)
+                client.CreateIndex(esIndex, new IndexSettings());
             return client;
         }
     }
