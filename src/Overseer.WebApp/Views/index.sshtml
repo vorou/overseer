@@ -37,7 +37,7 @@
                 <h3>Самые дорогие закупки за последнюю неделю</h3>
                 <table class="table table-striped">
                     @Each.Tenders
-                    <tr><td class="col-sm-1 price">@Current.Price <i class="fa fa-rub"></i></td><td class="col-sm-4"><a href="@Current.Url" target="_blank">@Current.Name</a></td><td class="col-sm-1">@Current.RegionName</td></tr>
+                    <tr><td class="col-sm-1 price">@Current.Price <i class="fa fa-rub"></i></td><td class="col-sm-4"><a href="@Current.Url" target="_blank">@Current.Name <i class="fa fa-external-link"></i></a></td><td class="col-sm-1 region">@Current.RegionName</td></tr>
                     @EndEach
                 </table>
             </div>
