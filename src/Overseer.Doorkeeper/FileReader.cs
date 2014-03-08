@@ -26,6 +26,7 @@ namespace Overseer.Doorkeeper
 
         public IEnumerable<SourceFile> ReadNewFiles()
         {
+            // .ToList() is to fetch the dirs and release the ftp connection
             var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
             foreach (var regionName in regionNames)
             {
