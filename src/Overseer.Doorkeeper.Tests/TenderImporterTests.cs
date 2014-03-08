@@ -168,6 +168,13 @@ namespace Overseer.Doorkeeper.Tests
             AssertNothingWasSaved();
         }
 
+        [Fact]
+        public void Import_InvalidPrice_DontImport()
+        {
+            ImportValidXmlWithoutPrice("<maxPrice>panda</maxPrice>");
+            AssertNothingWasSaved();
+        }
+
         private void ImportValidXmlWith(string body = "", string path = ValidUri)
         {
             ImportValidXmlWithoutPrice(@"<maxPrice>999.99</maxPrice>" + body, path);
