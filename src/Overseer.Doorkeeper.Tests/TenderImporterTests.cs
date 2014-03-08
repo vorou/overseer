@@ -60,7 +60,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Import_FewMaxPriceElements_SumsThem()
+        public void Import_FewMaxPriceElements_UsesFirst()
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
@@ -72,7 +72,7 @@ namespace Overseer.Doorkeeper.Tests
         <maxPrice>2.2</maxPrice>
     </lot>
 </ns2:fcsNotificationZK>");
-            AssertImportedTender(t => t.TotalPrice == 3.3M);
+            AssertImportedTender(t => t.TotalPrice == 1.1M);
         }
 
         [Fact]

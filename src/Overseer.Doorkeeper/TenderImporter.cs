@@ -150,9 +150,9 @@ namespace Overseer.Doorkeeper
                 if (name != null)
                     result.Name = name.Value;
 
-                var priceElements = xDoc.Descendants().Where(el => el.Name.LocalName == "maxPrice");
-                if (priceElements.Any())
-                    result.TotalPrice = priceElements.Sum(el => decimal.Parse(el.Value));
+                var priceElement = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "maxPrice");
+                if (priceElement != null)
+                    result.TotalPrice = decimal.Parse(priceElement.Value);
 
                 var firstOrDefault = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "docPublishDate");
                 if (firstOrDefault != null)
