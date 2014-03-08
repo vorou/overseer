@@ -70,7 +70,7 @@ namespace Overseer.Doorkeeper
 
         public void Reset()
         {
-            elastic.DeleteIndex<ImportEntry>();
+            elastic.DeleteMapping<ImportEntry>();
         }
 
         private IEnumerable<Uri> ListDirectory(string path)
