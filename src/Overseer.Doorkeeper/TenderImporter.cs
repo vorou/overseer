@@ -54,7 +54,7 @@ namespace Overseer.Doorkeeper
                                                                                {"Khabarovskij_kraj", "27"},
                                                                                {"Khakasija_Resp", "19"},
                                                                                {
-                                                                                   "Khanty-Mansijskij_Avtonomnyj_okrug_-_Jugra_AO",
+                                                                                   "Khanty-Mansijskij_AO-Jugra_AO",
                                                                                    "86"
                                                                                },
                                                                                {"Kirovskaja_obl", "43"},
