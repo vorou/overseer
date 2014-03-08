@@ -21,6 +21,7 @@ namespace Overseer.Doorkeeper
         {
             this.ftp = ftp;
             elastic = ElasticClientFactory.Create();
+            elastic.MapFromAttributes<ImportEntry>();
             log.InfoFormat("using {0}", ftp);
         }
 
