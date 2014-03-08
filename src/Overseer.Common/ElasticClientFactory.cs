@@ -8,7 +8,6 @@ namespace Overseer.Common
     public static class ElasticClientFactory
     {
         private static readonly ILog log = LogManager.GetLogger(typeof (ElasticClientFactory));
-
         private static readonly object locker = new object();
 
         public static ElasticClient Create()
