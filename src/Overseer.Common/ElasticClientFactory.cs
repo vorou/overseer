@@ -9,6 +9,8 @@ namespace Overseer.Common
     {
         private static readonly ILog log = LogManager.GetLogger(typeof (ElasticClientFactory));
 
+        private static readonly object locker = new object();
+
         public static ElasticClient Create()
         {
             var esHost = ConfigurationManager.AppSettings["esHost"];
@@ -16,8 +18,11 @@ namespace Overseer.Common
             var esIndex = ConfigurationManager.AppSettings["esIndex"];
             log.DebugFormat("esIndex = {0}", esIndex);
             var client = new ElasticClient(new ConnectionSettings(new Uri(esHost)).SetDefaultIndex(esIndex));
-            if (!client.IndexExists(esIndex).Exists)
-                client.CreateIndex(esIndex, new IndexSettings());
+            lock (locker)
+            {
+                if (!client.IndexExists(esIndex).Exists)
+                    client.CreateIndex(esIndex, new IndexSettings());
+            }
             return client;
         }
     }
