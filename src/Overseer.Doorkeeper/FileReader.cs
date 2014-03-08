@@ -55,14 +55,14 @@ namespace Overseer.Doorkeeper
 
                     foreach (var zipEntry in zip.Entries)
                     {
-                        var path = zipUri + "/" + zipEntry;
-                        if (elastic.Get<ImportEntry>(path) != null)
+                        var fullUri = zipUri + "/" + zipEntry;
+                        if (elastic.Get<ImportEntry>(fullUri) != null)
                         {
-                            log.InfoFormat("already imported, skipping {0}", path);
+                            log.InfoFormat("already imported, skipping {0}", fullUri);
                             continue;
                         }
 
-                        yield return new SourceFile {Path = path, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                        yield return new SourceFile {Uri = fullUri, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
                     }
                 }
             }

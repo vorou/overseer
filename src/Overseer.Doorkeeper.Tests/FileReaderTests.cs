@@ -50,7 +50,7 @@ namespace Overseer.Doorkeeper.Tests
 
             var actual = sut.ReadNewFiles();
 
-            actual.Single().Path.ShouldBe(expected);
+            actual.Single().Uri.ShouldBe(expected);
         }
 
         [Theory]
@@ -63,7 +63,7 @@ namespace Overseer.Doorkeeper.Tests
 
             var actual = sut.ReadNewFiles();
 
-            actual.Single().Path.ShouldBe(expected);
+            actual.Single().Uri.ShouldBe(expected);
         }
 
         [Fact]

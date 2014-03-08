@@ -122,7 +122,7 @@ namespace Overseer.Doorkeeper
             var stopwatch = Stopwatch.StartNew();
             foreach (var file in reader.ReadNewFiles())
             {
-                log.InfoFormat("importing file {0}", file.Path);
+                log.InfoFormat("importing file {0}", file.Uri);
                 var result = new Tender();
                 XDocument xDoc = null;
                 try
@@ -138,7 +138,7 @@ namespace Overseer.Doorkeeper
                 if (tenderIdElement == null)
                     continue;
 
-                var regionName = new Uri(file.Path).Segments[2].TrimEnd('/');
+                var regionName = new Uri(file.Uri).Segments[2].TrimEnd('/');
                 if (!folderNameToRegionId.ContainsKey(regionName))
                 {
                     log.WarnFormat("unkown region {0}", regionName);
@@ -165,10 +165,10 @@ namespace Overseer.Doorkeeper
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
                 repo.Save(result);
-                reader.MarkImported(file.Path);
+                reader.MarkImported(file.Uri);
                 countImported++;
 
-                log.InfoFormat("imported {0}", file.Path);
+                log.InfoFormat("imported {0}", file.Uri);
             }
             log.InfoFormat("{0} tenders imported", countImported);
             stopwatch.Stop();
