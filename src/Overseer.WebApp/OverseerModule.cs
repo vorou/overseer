@@ -34,7 +34,7 @@ namespace Overseer.WebApp
             return new TenderModel
                    {
                        Name = t.Name,
-                       Price = t.TotalPrice.ToString("C", new CultureInfo("ru-RU")),
+                       Price = t.TotalPrice.ToString("N0", new CultureInfo("ru-RU")),
                        RegionName = regionNameService.GetName(t.Region),
                        Url = new Uri(string.Format("https://zakupki.kontur.ru/notification44?id={0}", t.Id)).ToString()
                    };

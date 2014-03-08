@@ -22,10 +22,10 @@ namespace Overseer.WebApp.Tests
         [Fact]
         public void Root_Always_ContainsPriceForMostExpensiveTender()
         {
-            var totalPrice = 123456.78M;
+            var totalPrice = 123456.01M;
             var tender = fixture.Create<Tender>();
             tender.TotalPrice = totalPrice;
-            var totalPriceFormatted = "123 456,78 р.";
+            var totalPriceFormatted = "123 456";
 
             AssertTenderViewContains(tender, totalPriceFormatted);
         }
