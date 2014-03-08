@@ -11,10 +11,6 @@ namespace Overseer.Doorkeeper.Tests
 {
     public class TenderImporterTests
     {
-        private const string someValidTender = @"
-<ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
-    <purchaseNumber>0361200002614001321</purchaseNumber>
-</ns2:fcsNotificationZK>";
         private const string ValidUri = "ftp://valid/region/Adygeja_Resp";
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
@@ -24,6 +20,7 @@ namespace Overseer.Doorkeeper.Tests
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
+    <maxPrice>123.3</maxPrice>
 </ns2:fcsNotificationZK>");
             AssertImportedTender(t => t.Type == "fcsNotificationZK");
         }
@@ -34,6 +31,7 @@ namespace Overseer.Doorkeeper.Tests
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>
+    <maxPrice>123.3</maxPrice>
 </ns2:fcsNotificationZK>");
             AssertImportedTender(t => t.Id == "0361200002614001321");
         }
@@ -55,7 +53,7 @@ namespace Overseer.Doorkeeper.Tests
         [Fact]
         public void Import_SingleLotElement_ReadsPrice()
         {
-            ImportValidXmlWith(@"
+            ImportValidXmlWithoutPrice(@"
 <lot>
     <maxPrice>248261.2</maxPrice>
 </lot>
@@ -80,7 +78,7 @@ namespace Overseer.Doorkeeper.Tests
         [Fact]
         public void Import_FewMaxPriceElementsWithSamePrice_TakeThePriceOnce()
         {
-            ImportValidXmlWith(@"
+            ImportValidXmlWithoutPrice(@"
 <lot>
     <maxPrice>11.1</maxPrice>
 </lot>
@@ -129,7 +127,7 @@ namespace Overseer.Doorkeeper.Tests
         public void Import_Succeeded_MarksAsImported()
         {
             var src = ValidUri;
-            Import(someValidTender, src);
+            ImportValidXmlWith("", src);
 
             var reader = fixture.Create<IFileReader>();
             A.CallTo(() => reader.MarkImported(src)).MustHaveHappened();
@@ -140,7 +138,7 @@ namespace Overseer.Doorkeeper.Tests
         [InlineData("ftp://localhost/fcs_regions/Omskaja_obl/notifications/currMonth/panda.zip", "55")]
         public void Import_KnownRegion_SetsRegion(string src, string expected)
         {
-            Import(someValidTender, src);
+            ImportValidXmlWith("", src);
 
             AssertImportedTender(t => t.Region == expected);
         }
@@ -148,7 +146,7 @@ namespace Overseer.Doorkeeper.Tests
         [Fact]
         public void Import_UnknownRegion_ShouldNotSave()
         {
-            Import(someValidTender, "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
+            ImportValidXmlWith("", "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
 
             var repo = fixture.Create<ITenderRepository>();
             A.CallTo(() => repo.Save(A<Tender>._)).MustNotHaveHappened();
@@ -158,18 +156,30 @@ namespace Overseer.Doorkeeper.Tests
         public void Import_Always_SetsSource()
         {
             var source = ValidUri;
-            Import(someValidTender, source);
+            ImportValidXmlWith("", source);
 
             AssertImportedTender(t => t.Source == source);
         }
 
-        private void ImportValidXmlWith(string body = "")
+        [Fact]
+        public void Import_NoMaxPrice_DontImport()
+        {
+            ImportValidXmlWithoutPrice("");
+            AssertNothingWasSaved();
+        }
+
+        private void ImportValidXmlWith(string body = "", string path = ValidUri)
+        {
+            ImportValidXmlWithoutPrice(@"<maxPrice>999.99</maxPrice>" + body, path);
+        }
+
+        private void ImportValidXmlWithoutPrice(string body = "", string path = ValidUri)
         {
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>"
                    + body + @"
-</ns2:fcsNotificationZK>");
+</ns2:fcsNotificationZK>", path);
         }
 
         private void Import(string xml, string path = ValidUri)
