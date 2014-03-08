@@ -28,6 +28,9 @@ namespace Overseer.Doorkeeper
         {
             // .ToList() is to fetch the dirs and release the ftp connection
             var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
+#if DEBUG
+            regionNames = regionNames.GetRange(0, 1);
+#endif
             foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
