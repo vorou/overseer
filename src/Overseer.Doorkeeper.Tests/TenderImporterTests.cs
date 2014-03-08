@@ -148,7 +148,16 @@ namespace Overseer.Doorkeeper.Tests
             Import(validXml, "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
 
             var repo = fixture.Create<ITenderRepository>();
-            A.CallTo(()=>repo.Save(A<Tender>._)).MustNotHaveHappened();
+            A.CallTo(() => repo.Save(A<Tender>._)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void Import_Always_SetsSource()
+        {
+            var source = ValidUri;
+            Import(validXml, source);
+
+            AssertImportedTender(t => t.Source == source);
         }
 
         private void Import(string xml, string path = ValidUri)
