@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using FakeItEasy;
 using Ploeh.AutoFixture;
-using ServiceStack.Text;
 using Shouldly;
 using Xunit;
 using Xunit.Extensions;
@@ -35,7 +33,7 @@ namespace Overseer.Common.Tests
         [Fact]
         public void Clear_Always_RemovesEverything()
         {
-            var source = new Tender {Id = "panda", Type = "bear"};
+            var source = new Tender {Id = "panda"};
             var sut = CreateSut();
             sut.Save(source);
 
