@@ -32,7 +32,7 @@ namespace Overseer.Common
 
         public void Clear()
         {
-            elastic.DeleteIndex<Tender>();
+            elastic.DeleteMapping<Tender>();
         }
 
         public IEnumerable<Tender> GetMostExpensive(int limit = 5)
