@@ -25,7 +25,7 @@ namespace Overseer.WebApp
                                   var query = (string) Request.Query.q;
                                   var tenders = tenderRepo.Find(query);
                                   var model = new GridModel {Tenders = tenders.Select(Map)};
-                                  return View["results", model];
+                                  return View["index", model];
                               };
         }
 
