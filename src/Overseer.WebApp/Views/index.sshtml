@@ -50,9 +50,9 @@
 
         <script type="text/x-handlebars" data-template-name="index">
             <table class="table table-striped">
-                @Each.Tenders
-                <tr><td class="col-sm-1 price">@Current.Price <i class="fa fa-rub"></i></td><td class="col-sm-4"><a href="@Current.Url" target="_blank">@Current.Name <i class="fa fa-external-link"></i></a></td><td class="col-sm-1 region">@Current.RegionName</td></tr>
-                @EndEach
+                {{#each}}
+                <tr><td class="col-sm-1 price">{{price}} <i class="fa fa-rub"></i></td><td class="col-sm-4"><a href="{{unbound url}}" target="_blank">{{name}} <i class="fa fa-external-link"></i></a></td><td class="col-sm-1 region">{{regionName}}</td></tr>
+                {{/each}}
             </table>
         </script>
 
