@@ -61,6 +61,9 @@
     <Reference Include="Ploeh.SemanticComparison">
       <HintPath>..\packages\SemanticComparison.3.16.5\lib\net40\Ploeh.SemanticComparison.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.12\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="Shouldly">
       <HintPath>..\packages\Shouldly.1.1.1.1\lib\35\Shouldly.dll</HintPath>
     </Reference>

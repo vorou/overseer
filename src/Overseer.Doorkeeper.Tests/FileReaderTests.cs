@@ -35,7 +35,7 @@ namespace Overseer.Doorkeeper.Tests
 
             var actual = sut.ReadNewFiles();
 
-            actual.Count().ShouldBe(0);
+            actual.ShouldBeEmpty();
         }
 
         [Theory]

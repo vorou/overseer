@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using FakeItEasy;
 using Ploeh.AutoFixture;
+using ServiceStack.Text;
 using Shouldly;
 using Xunit;
 using Xunit.Extensions;
@@ -19,14 +21,15 @@ namespace Overseer.Common.Tests
         [Fact]
         public void Save_Always_SavesSource()
         {
-            var source = new Tender {Id = "panda", Type = "bear"};
+            var id = fixture.Create<string>();
+            var source = fixture.Create<Tender>();
+            source.Id = id;
             var sut = CreateSut();
 
             Save(sut, source);
 
-            var actual = sut.GetById("panda");
-            actual.Id.ShouldBe(source.Id);
-            actual.Type.ShouldBe(source.Type);
+            var actual = sut.GetById(id);
+            actual.ShouldBe(source.Ish());
         }
 
         [Fact]
