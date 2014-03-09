@@ -25,7 +25,7 @@
             <div class="container">
                 <div class="navbar-header">
                     <span class="navbar-brand">
-                        <i class="fa fa-eye"></i>
+                        <a href="/" class="navbar-home"><i class="fa fa-eye"></i> overseer</a>
                     </span>
                 </div>
                 <div class="col-sm-3 pull-right">

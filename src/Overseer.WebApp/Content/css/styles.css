@@ -15,3 +15,8 @@ td.price {
 td.region {
     color: gray;
 }
+
+a.navbar-home {
+    text-decoration: none;
+    color: #9ebdd9;
+}
