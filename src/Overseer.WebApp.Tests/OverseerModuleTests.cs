@@ -20,38 +20,46 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void Root_Always_ContainsPriceForMostExpensiveTender()
+        public void Tenders_NoQuery_ContainsPriceForMostExpensiveTender()
         {
+            var totalPriceFormatted = "123 456";
             var totalPrice = 123456.01M;
             var tender = fixture.Create<Tender>();
             tender.TotalPrice = totalPrice;
-            var totalPriceFormatted = "123 456";
+            StubMostExpensive(tender);
 
-            AssertTenderViewContains(tender, totalPriceFormatted);
+            var actual = GetResponseAsString("/tenders");
+
+            actual.ShouldContain(totalPriceFormatted);
         }
 
         [Fact]
-        public void Root_Always_ContainsNameForMostExpensiveTender()
+        public void Tenders_NoQuery_ContainsNameForMostExpensiveTender()
         {
             var tenderName = fixture.Create<string>();
             var tender = fixture.Create<Tender>();
             tender.Name = tenderName;
+            StubMostExpensive(tender);
 
-            AssertTenderViewContains(tender, tenderName);
+            var actual = GetResponseAsString("/tenders");
+
+            actual.ShouldContain(tenderName);
         }
 
         [Fact]
-        public void Root_Always_ContainsRegionNameForTender()
+        public void Tenders_NoQuery_ContainsRegionNameForTender()
         {
             var regionNameService = fixture.Freeze<IRegionNameService>();
             var regionId = fixture.Create<string>();
             var regionName = fixture.Create<string>();
             A.CallTo(() => regionNameService.GetName(regionId)).Returns(regionName);
-
             var tender = fixture.Create<Tender>();
             tender.Region = regionId;
+            StubMostExpensive(tender);
 
-            AssertTenderViewContains(tender, regionName);
+            var actual = GetResponseAsString("/tenders");
+
+            actual.ShouldContain(regionName);
         }
 
         [Fact]
@@ -59,10 +67,11 @@ namespace Overseer.WebApp.Tests
         {
             var tender = fixture.Create<Tender>();
             tender.Id = "panda";
+            StubMostExpensive(tender);
 
-            var actual = GetRoot(tender);
+            var actual = GetResponseAsString("/tenders");
 
-            actual.Body["a"].ShouldContainAttribute("href", "https://zakupki.kontur.ru/notification44?id=panda");
+            actual.ShouldContain("https://zakupki.kontur.ru/notification44?id=panda");
         }
 
         [Fact]
@@ -76,21 +85,6 @@ namespace Overseer.WebApp.Tests
         }
 
         [Fact]
-        public void Tenders_Always_ContainsTender()
-        {
-            var tenderName = fixture.Create<string>();
-            var tender = fixture.Create<Tender>();
-            tender.Name = tenderName;
-            var repo = fixture.Freeze<ITenderRepository>();
-            A.CallTo(() => repo.Find(null)).Returns(new[] {tender});
-            var sut = CreateDefaultBrowser();
-
-            var actual = sut.Get("/tenders");
-
-            actual.Body["a"].AnyShouldContain(tenderName);
-        }
-
-        [Fact]
         public void Tenders_QueryIsPassed_ContainsResult()
         {
             var tenderName = fixture.Create<string>();
@@ -100,33 +94,9 @@ namespace Overseer.WebApp.Tests
             A.CallTo(() => repo.Find("panda")).Returns(new[] {tender});
             var sut = CreateDefaultBrowser();
 
-            var actual = sut.Get("/tenders", with => with.Query("q", "panda"));
+            var actual = sut.Get("/tenders", with => with.Query("q", "panda")).Body.AsString();
 
-            actual.Body["a"].AnyShouldContain(tenderName);
-        }
-
-        private void AssertTenderViewContains(Tender tender, string expected)
-        {
-            var repo = fixture.Freeze<ITenderRepository>();
-            var tenders = new[] {tender};
-            A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(tenders);
-            var sut = CreateDefaultBrowser();
-
-            var actual = sut.Get("/").Body.AsString();
-
-            actual.ShouldContain(expected);
-        }
-
-        private BrowserResponse GetRoot(Tender tender)
-        {
-            var repo = fixture.Freeze<ITenderRepository>();
-            var tenders = new[] {tender};
-            A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(tenders);
-            var sut = CreateDefaultBrowser();
-
-            var actual = sut.Get("/");
-
-            return actual;
+            actual.ShouldContain(tenderName);
         }
 
         private Browser CreateDefaultBrowser()
@@ -140,5 +110,16 @@ namespace Overseer.WebApp.Tests
         }
 
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
+
+        private void StubMostExpensive(Tender tender)
+        {
+            var repo = fixture.Freeze<ITenderRepository>();
+            A.CallTo(() => repo.GetMostExpensive(A<int>._)).Returns(new[] {tender});
+        }
+
+        private string GetResponseAsString(string route)
+        {
+            return CreateDefaultBrowser().Get(route).Body.AsString();
+        }
     }
 }

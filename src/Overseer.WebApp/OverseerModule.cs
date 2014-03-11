@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Nancy;
+using Nancy.Responses.Negotiation;
 using Overseer.Common;
 using Overseer.WebApp.Models;
 
@@ -14,18 +15,13 @@ namespace Overseer.WebApp
         public OverseerModule(ITenderRepository tenderRepo, IRegionNameService regionNameService)
         {
             this.regionNameService = regionNameService;
-            Get["/"] = _ =>
-                       {
-                           var tenders = tenderRepo.GetMostExpensive(30);
-                           var model = new GridModel {Tenders = tenders.Select(Map)};
-                           return View["index", model];
-                       };
+            Get["/"] = _ => View["index"];
             Get["/tenders"] = _ =>
                               {
                                   var query = (string) Request.Query.q;
-                                  var tenders = tenderRepo.Find(query);
+                                  var tenders = query != null ? tenderRepo.Find(query) : tenderRepo.GetMostExpensive(30);
                                   var model = new GridModel {Tenders = tenders.Select(Map)};
-                                  return View["index", model];
+                                  return Negotiate.WithModel(model).WithAllowedMediaRange(MediaRange.FromString("application/json"));
                               };
         }
 
