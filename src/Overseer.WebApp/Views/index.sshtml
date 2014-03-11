@@ -59,7 +59,7 @@
         <script src="/Content/js/jquery-2.1.0.min.js"></script>
         <script src="/Content/js/bootstrap.min.js"></script>
         <script src="/Content/js/handlebars-1.1.2.js"></script>
-        <script src="/Content/js/ember-1.4.0.js"></script>
+        <script src="/Content/js/ember-1.4.0.debug.js"></script>
         <script src="/Content/js/ember-data.js"></script>
         <script src="/Content/js/app.js"></script>
     </body>
