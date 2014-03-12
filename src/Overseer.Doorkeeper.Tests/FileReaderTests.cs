@@ -111,14 +111,53 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void MarkImported_ZipEntryMarkedAsImported_ReturnsEmpty()
+        public void Read_ZipHasOnlyOneEntryItsMarkedAsImported_ReturnsEmpty()
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", "entry");
             var sut = CreateSut();
-
+            sut.ReadNewFiles().ToList();
             sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/entry");
 
             var actual = sut.ReadNewFiles();
+
+            actual.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void Read_ZipHasTwoEntriesOneMarkedAsImported_ReadsMarkedEntryAgain()
+        {
+            var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(fullDirPath);
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, fullDirPath, "panda.zip"), ZipArchiveMode.Create))
+            {
+                zip.CreateEntry("yo");
+                zip.CreateEntry(Path.GetRandomFileName());
+            }
+
+            var entryUrl = "ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/yo";
+            var sut = CreateSut();
+            sut.ReadNewFiles().ToList();
+            sut.MarkImported(entryUrl);
+
+            var actual = sut.ReadNewFiles();
+
+            actual.ShouldContain(f => f.Uri == entryUrl);
+        }
+
+        [Fact]
+        public void Read_ZipWasEmpty_WontReadItAgain()
+        {
+            var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
+            Directory.CreateDirectory(fullDirPath);
+            var sut = CreateSut();
+            using (var zip = ZipFile.Open(Path.Combine(FtpMountDir, fullDirPath, "panda.zip"), ZipArchiveMode.Create))
+            {
+                sut.ReadNewFiles().ToList();
+                zip.CreateEntry("entry");
+            }
+
+            var actual = sut.ReadNewFiles();
+
             actual.ShouldBeEmpty();
         }
 
@@ -204,9 +243,7 @@ namespace Overseer.Doorkeeper.Tests
             using (var zipContent = new MemoryStream())
             {
                 using (var zip = new ZipArchive(zipContent, ZipArchiveMode.Create))
-                {
                     zip.CreateEntry("entry");
-                }
                 return zipContent.ToArray();
             }
         }

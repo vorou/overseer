@@ -16,6 +16,7 @@ namespace Overseer.Doorkeeper
 
         private readonly Uri ftp;
         private readonly ElasticClient elastic;
+        private readonly Dictionary<Uri, List<string>> zipToEntries = new Dictionary<Uri, List<string>>();
 
         public FileReader(Uri ftp)
         {
@@ -39,11 +40,20 @@ namespace Overseer.Doorkeeper
                     ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
                         .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
                 {
-                    ZipArchive zip;
+                    if (elastic.Get<ImportEntry>(zipUri.ToString()) != null)
+                    {
+                        log.InfoFormat("already imported, skipping {0}", zipUri);
+                        continue;
+                    }
+
                     var content = GetFile(zipUri);
                     if (content == null)
+                    {
+                        MarkZipImported(zipUri);
                         continue;
+                    }
 
+                    ZipArchive zip;
                     try
                     {
                         zip = new ZipArchive(new MemoryStream(content));
@@ -56,13 +66,10 @@ namespace Overseer.Doorkeeper
 
                     foreach (var zipEntry in zip.Entries)
                     {
+                        if (!zipToEntries.ContainsKey(zipUri))
+                            zipToEntries.Add(zipUri, new List<string>());
+                        zipToEntries[zipUri].Add(zipEntry.Name);
                         var fullUri = zipUri + "/" + zipEntry;
-                        if (elastic.Get<ImportEntry>(fullUri) != null)
-                        {
-                            log.InfoFormat("already imported, skipping {0}", fullUri.Substring(fullUri.Length - 10));
-                            continue;
-                        }
-
                         yield return new SourceFile {Uri = fullUri, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
                     }
                 }
@@ -124,7 +131,17 @@ namespace Overseer.Doorkeeper
 
         public void MarkImported(string src)
         {
-            elastic.Index(new ImportEntry {Id = src});
+            var fullUri = new Uri(src);
+            var entryName = fullUri.Segments.Last();
+            var zipUri = new Uri(src.Substring(0, src.Length - (entryName.Length + 1)));
+            zipToEntries[zipUri].Remove(entryName);
+            if (!zipToEntries[zipUri].Any())
+                MarkZipImported(zipUri);
+        }
+
+        private void MarkZipImported(Uri zipUri)
+        {
+            elastic.Index(new ImportEntry {Id = zipUri.ToString()});
             elastic.Refresh<ImportEntry>();
         }
     }
