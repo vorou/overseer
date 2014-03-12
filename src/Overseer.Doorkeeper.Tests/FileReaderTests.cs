@@ -139,7 +139,7 @@ namespace Overseer.Doorkeeper.Tests
             sut.ReadNewFiles().ToList();
             sut.MarkImported(entryUrl);
 
-            var actual = sut.ReadNewFiles();
+            var actual = sut.ReadNewFiles().ToList();
 
             actual.ShouldContain(f => f.Uri == entryUrl);
         }
