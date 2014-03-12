@@ -86,7 +86,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Read_ZipWasntMarkedAsImported_ReadsItAgain()
+        public void ImportControl_ZipWasntMarkedAsImported_ReadsItAgain()
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
@@ -98,7 +98,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Read_ReaderWasReset_ReadsAgain()
+        public void ImportControl_ReaderWasReset_ReadsAgain()
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
             var sut = CreateSut();
@@ -111,7 +111,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Read_ZipHasOnlyOneEntryItsMarkedAsImported_ReturnsEmpty()
+        public void ImportControl_ZipHasOnlyOneEntryItsMarkedAsImported_ReturnsEmpty()
         {
             CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", "entry");
             var sut = CreateSut();
@@ -124,7 +124,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Read_ZipHasTwoEntriesOneMarkedAsImported_ReadsMarkedEntryAgain()
+        public void ImportControl_ZipHasTwoEntriesOneMarkedAsImported_ReadsMarkedEntryAgain()
         {
             var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
             Directory.CreateDirectory(fullDirPath);
@@ -145,7 +145,7 @@ namespace Overseer.Doorkeeper.Tests
         }
 
         [Fact]
-        public void Read_ZipWasEmpty_WontReadItAgain()
+        public void ImportControl_ZipWasEmpty_WontReadItAgain()
         {
             var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
             Directory.CreateDirectory(fullDirPath);
