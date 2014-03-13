@@ -13,6 +13,7 @@ namespace Overseer.Doorkeeper.Tests
     public class FileReaderTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Doorkeeper.Tests\ftp";
+        private readonly string SomeRegionDir = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
         private static readonly Uri FtpUri = new Uri("ftp://localhost");
 
         public FileReaderTests()
@@ -73,7 +74,7 @@ namespace Overseer.Doorkeeper.Tests
             public void Read_ZipInNotificationsCurrentMonth_ReadsItsContent()
             {
                 var content = "<привет></привет>";
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\",
+                CreateZipAtFtp(SomeRegionDir,
                                GetRandomZipName(),
                                zip =>
                                {
@@ -94,7 +95,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void ImportControl_SecondReadZipWasntMarkedAsImported_ReadsItAgain()
             {
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
 
@@ -106,7 +107,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void ImportControl_ReaderWasReset_ReadsAgain()
             {
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
                 sut.Reset();
@@ -153,10 +154,9 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void ImportControl_ZipHadZeroLengthThenEntryWasAdded_WontReadItAgain()
             {
-                var dir = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
+                var dir = SomeRegionDir;
                 var fileName = GetRandomZipName();
                 var path = PrepareForFile(dir, fileName);
-
                 File.WriteAllBytes(path, new byte[0]);
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
@@ -174,7 +174,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_BadZip_ReturnsEmpty()
             {
-                var path = PrepareForFile(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName());
+                var path = PrepareForFile(SomeRegionDir, GetRandomZipName());
                 File.WriteAllText(path, "bad zip content");
                 var sut = CreateSut();
 
@@ -186,7 +186,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_BadZipAndGoodZip_ReturnsOne()
             {
-                var currMonth = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
+                var currMonth = SomeRegionDir;
                 CreateZipAtFtp(currMonth, GetRandomZipName(), Path.GetRandomFileName());
                 var path = PrepareForFile(currMonth, GetRandomZipName());
                 File.WriteAllText(path, "bad zip content");
@@ -214,7 +214,7 @@ namespace Overseer.Doorkeeper.Tests
             {
                 var sut = CreateTestableSut();
                 sut.GetFileCoreBody = (client, uri) => { throw new WebException(); };
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
                 var actual = sut.ReadNewFiles();
 
@@ -235,8 +235,8 @@ namespace Overseer.Doorkeeper.Tests
                                           }
                                           return GetValidNonEmptyZipBytes();
                                       };
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
                 var actual = sut.ReadNewFiles();
 
