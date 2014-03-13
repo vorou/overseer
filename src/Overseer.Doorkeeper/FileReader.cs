@@ -46,6 +46,8 @@ namespace Overseer.Doorkeeper
 
                     var content = GetFile(zipUri);
                     if (content == null)
+                        continue;
+                    if (content.Length == 0)
                     {
                         log.InfoFormat("empty, skipping {0}", zipUri);
                         MarkZipImported(zipUri);
@@ -105,7 +107,6 @@ namespace Overseer.Doorkeeper
             }
 
             using (var streamReader = new StreamReader(response.GetResponseStream()))
-            {
                 while (true)
                 {
                     var line = streamReader.ReadLine();
@@ -113,7 +114,6 @@ namespace Overseer.Doorkeeper
                         break;
                     yield return new Uri(baseUri, line);
                 }
-            }
         }
 
         private byte[] GetFile(Uri uri)
