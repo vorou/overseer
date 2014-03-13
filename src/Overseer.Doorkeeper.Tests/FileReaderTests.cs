@@ -18,15 +18,20 @@ namespace Overseer.Doorkeeper.Tests
 
         public FileReaderTests()
         {
-            CreateSut().Reset();
-            RemoveDirectoryIfExists();
-            Directory.CreateDirectory(FtpMountDir);
+            ClearImport();
+            ClearFtp();
         }
 
-        private void RemoveDirectoryIfExists()
+        private static void ClearImport()
+        {
+            CreateSut().Reset();
+        }
+
+        private void ClearFtp()
         {
             if (Directory.Exists(FtpMountDir))
                 Directory.Delete(FtpMountDir, true);
+            Directory.CreateDirectory(FtpMountDir);
         }
 
         public class FileRetrieving : FileReaderTests
