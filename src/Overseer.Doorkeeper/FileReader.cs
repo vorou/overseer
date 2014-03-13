@@ -44,6 +44,10 @@ namespace Overseer.Doorkeeper
                         continue;
                     }
 
+                    if (IsCached(zipUri))
+                        foreach (var sourceFile in GetSourceFilesFromCache(zipUri))
+                            yield return sourceFile;
+
                     var content = GetFile(zipUri);
                     if (content == null)
                         continue;
@@ -68,13 +72,15 @@ namespace Overseer.Doorkeeper
                     var entries = 0;
                     foreach (var zipEntry in zip.Entries)
                     {
-                        entries++;
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
-                        if (!zipToEntries.ContainsKey(zipUri))
-                            zipToEntries.Add(zipUri, new List<string>());
-                        zipToEntries[zipUri].Add(zipEntry.Name);
-                        var fullUri = zipUri + "/" + zipEntry;
-                        yield return new SourceFile {Uri = fullUri, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+
+                        entries++;
+                        AddEntry(zipUri, zipEntry);
+
+                        var entryContent = new StreamReader(zipEntry.Open()).ReadToEnd();
+                        var sourceFile = CreateSourceFile(zipUri, zipEntry.ToString(), entryContent);
+                        SaveToCache(zipUri.ToString(), zipEntry.ToString(), entryContent);
+                        yield return sourceFile;
                     }
                     if (entries == 0)
                     {
@@ -85,10 +91,56 @@ namespace Overseer.Doorkeeper
             }
         }
 
+        private static bool IsCached(Uri zipUri)
+        {
+            var cacheDirPath = GetCacheDirPath(zipUri.ToString());
+            return Directory.Exists(cacheDirPath);
+        }
+
+        private static IEnumerable<SourceFile> GetSourceFilesFromCache(Uri zipUri)
+        {
+            var cacheDirPath = GetCacheDirPath(zipUri.ToString());
+            foreach (var file in Directory.GetFiles(cacheDirPath))
+                yield return CreateSourceFile(zipUri, Path.GetFileName(file), File.ReadAllText(file));
+        }
+
+        private static SourceFile CreateSourceFile(Uri zipUri, string entryName, string entryContent)
+        {
+            var fullUri = zipUri + "/" + entryName;
+            var sourceFile = new SourceFile {Uri = fullUri, Content = entryContent};
+            return sourceFile;
+        }
+
+        private static void SaveToCache(string zipUri, string entryName, string entryContent)
+        {
+            var cacheDirPath = GetCacheDirPath(zipUri);
+            if (!Directory.Exists(cacheDirPath))
+                Directory.CreateDirectory(cacheDirPath);
+            File.WriteAllText(Path.Combine(cacheDirPath, ConvertUriToFileName(entryName)), entryContent);
+        }
+
+        private static string GetCacheDirPath(string zipUri)
+        {
+            return Path.Combine(Path.GetTempPath(), ConvertUriToFileName(zipUri));
+        }
+
+        private static string ConvertUriToFileName(string uri)
+        {
+            return uri.Replace(':', '_').Replace('/', '_');
+        }
+
+        private void AddEntry(Uri zipUri, ZipArchiveEntry zipEntry)
+        {
+            if (!zipToEntries.ContainsKey(zipUri))
+                zipToEntries.Add(zipUri, new List<string>());
+            zipToEntries[zipUri].Add(zipEntry.Name);
+        }
+
         private IEnumerable<Uri> GetZipUris(string regionName)
         {
             return ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
-                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))).Where(p => Path.GetExtension(p.ToString()) == ".zip");
+                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName)))
+                .Where(p => Path.GetExtension(p.ToString()) == ".zip");
         }
 
         public void Reset()

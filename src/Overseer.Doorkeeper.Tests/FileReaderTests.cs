@@ -276,6 +276,49 @@ namespace Overseer.Doorkeeper.Tests
             }
         }
 
+        public class Cache : FileReaderTests
+        {
+            [Fact]
+            public void Cache_FileHadAnEntryThenEntryWasRemoved_ShouldStillReturnTheEntry()
+            {
+                var dir = SomeRegionDir;
+                var fileName = GetRandomZipName();
+                var entryName = Path.GetRandomFileName();
+                CreateZipAtFtp(dir, fileName, entryName);
+                var sut = CreateSut();
+                sut.ReadNewFiles().ToList();
+
+                CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
+                var actual = sut.ReadNewFiles();
+
+                actual.ShouldNotBeEmpty();
+            }
+
+            [Fact]
+            public void Cache_FileHadAnEntryThenEntryWasRemoved_ShouldStillReturnProperContent()
+            {
+                var dir = SomeRegionDir;
+                var fileName = GetRandomZipName();
+                var entryName = Path.GetRandomFileName();
+                var content = "content";
+                CreateZipAtFtp(dir,
+                               fileName,
+                               zip =>
+                               {
+                                   var entry = zip.CreateEntry(entryName);
+                                   using (var stream = new StreamWriter(entry.Open()))
+                                       stream.Write(content);
+                               });
+                var sut = CreateSut();
+                sut.ReadNewFiles().ToList();
+
+                CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
+                var actual = sut.ReadNewFiles();
+
+                actual.Single().Content.ShouldBe(content);
+            }
+        }
+
         private static string GetRandomZipName()
         {
             return Path.ChangeExtension(Path.GetRandomFileName(), "zip");
