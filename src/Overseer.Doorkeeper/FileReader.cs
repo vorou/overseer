@@ -36,9 +36,7 @@ namespace Overseer.Doorkeeper
             foreach (var regionName in regionNames)
             {
                 log.InfoFormat("importing region {0}", regionName);
-                foreach (var zipUri in
-                    ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
-                        .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))))
+                foreach (var zipUri in GetZipUris(regionName))
                 {
                     if (elastic.Get<ImportEntry>(zipUri.ToString()) != null)
                     {
@@ -49,6 +47,7 @@ namespace Overseer.Doorkeeper
                     var content = GetFile(zipUri);
                     if (content == null)
                     {
+                        log.InfoFormat("empty, skipping {0}", zipUri);
                         MarkZipImported(zipUri);
                         continue;
                     }
@@ -60,12 +59,13 @@ namespace Overseer.Doorkeeper
                     }
                     catch (InvalidDataException)
                     {
-                        log.ErrorFormat("Bad zip: {0}", zipUri);
+                        log.ErrorFormat("bad zip {0}", zipUri);
                         continue;
                     }
 
                     foreach (var zipEntry in zip.Entries)
                     {
+                        log.DebugFormat("processing entry {0}", zipEntry.FullName);
                         if (!zipToEntries.ContainsKey(zipUri))
                             zipToEntries.Add(zipUri, new List<string>());
                         zipToEntries[zipUri].Add(zipEntry.Name);
@@ -74,6 +74,12 @@ namespace Overseer.Doorkeeper
                     }
                 }
             }
+        }
+
+        private IEnumerable<Uri> GetZipUris(string regionName)
+        {
+            return ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
+                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName)));
         }
 
         public void Reset()
@@ -97,14 +103,16 @@ namespace Overseer.Doorkeeper
                 log.WarnFormat("failed to list directory {0}", path);
                 yield break;
             }
-            var streamReader = new StreamReader(response.GetResponseStream());
 
-            while (true)
+            using (var streamReader = new StreamReader(response.GetResponseStream()))
             {
-                var line = streamReader.ReadLine();
-                if (line == null)
-                    break;
-                yield return new Uri(baseUri, line);
+                while (true)
+                {
+                    var line = streamReader.ReadLine();
+                    if (line == null)
+                        break;
+                    yield return new Uri(baseUri, line);
+                }
             }
         }
 
