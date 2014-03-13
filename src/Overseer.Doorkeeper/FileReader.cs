@@ -88,7 +88,7 @@ namespace Overseer.Doorkeeper
         private IEnumerable<Uri> GetZipUris(string regionName)
         {
             return ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
-                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName)));
+                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName))).Where(p => Path.GetExtension(p.ToString()) == ".zip");
         }
 
         public void Reset()

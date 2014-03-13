@@ -46,6 +46,17 @@ namespace Overseer.Doorkeeper.Tests
                 actual.ShouldBeEmpty();
             }
 
+            [Fact]
+            public void Read_WrongFileExtension_IgnoresIt()
+            {
+                CreateZipAtFtp(SomeRegionDir, Path.GetRandomFileName(), Path.GetRandomFileName());
+                var sut = CreateSut();
+
+                var actual = sut.ReadNewFiles();
+
+                actual.ShouldBeEmpty();
+            }
+
             [Theory]
             [InlineData(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "archive.zip", "entry",
                 @"ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/archive.zip/entry")]
