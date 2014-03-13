@@ -65,14 +65,21 @@ namespace Overseer.Doorkeeper
                         continue;
                     }
 
+                    var entries = 0;
                     foreach (var zipEntry in zip.Entries)
                     {
+                        entries++;
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
                         if (!zipToEntries.ContainsKey(zipUri))
                             zipToEntries.Add(zipUri, new List<string>());
                         zipToEntries[zipUri].Add(zipEntry.Name);
                         var fullUri = zipUri + "/" + zipEntry;
                         yield return new SourceFile {Uri = fullUri, Content = new StreamReader(zipEntry.Open()).ReadToEnd()};
+                    }
+                    if (entries == 0)
+                    {
+                        log.InfoFormat("no entries {0}");
+                        MarkZipImported(zipUri);
                     }
                 }
             }

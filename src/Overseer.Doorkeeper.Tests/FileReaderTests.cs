@@ -170,6 +170,22 @@ namespace Overseer.Doorkeeper.Tests
 
                 actual.ShouldBeEmpty();
             }
+
+            [Fact]
+            public void ImportControl_ZipHadNoEntriesThenEntryWasAdded_WontReadItAgain()
+            {
+                var dir = SomeRegionDir;
+                var fileName = GetRandomZipName();
+                CreateZipAtFtp(dir, fileName, _ => { });
+                var sut = CreateSut();
+                sut.ReadNewFiles().ToList();
+
+                CreateZipAtFtp(dir, fileName, zip => zip.CreateEntry(Path.GetRandomFileName()));
+
+                var actual = sut.ReadNewFiles();
+
+                actual.ShouldBeEmpty();
+            }
         }
 
         public class BadStuff : FileReaderTests
