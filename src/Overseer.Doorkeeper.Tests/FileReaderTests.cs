@@ -156,8 +156,7 @@ namespace Overseer.Doorkeeper.Tests
             {
                 var dir = SomeRegionDir;
                 var fileName = GetRandomZipName();
-                var path = PrepareForFile(dir, fileName);
-                File.WriteAllBytes(path, new byte[0]);
+                CreateFileAtFtp(dir, fileName, "");
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
 
@@ -174,8 +173,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_BadZip_ReturnsEmpty()
             {
-                var path = PrepareForFile(SomeRegionDir, GetRandomZipName());
-                File.WriteAllText(path, "bad zip content");
+                CreateFileAtFtp(SomeRegionDir, GetRandomZipName(), "bad zip content");
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -186,10 +184,8 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_BadZipAndGoodZip_ReturnsOne()
             {
-                var currMonth = SomeRegionDir;
-                CreateZipAtFtp(currMonth, GetRandomZipName(), Path.GetRandomFileName());
-                var path = PrepareForFile(currMonth, GetRandomZipName());
-                File.WriteAllText(path, "bad zip content");
+                CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
+                CreateFileAtFtp(SomeRegionDir, GetRandomZipName(), "bad zip content");
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -279,6 +275,12 @@ namespace Overseer.Doorkeeper.Tests
             var fullPath = PrepareForFile(dirPath, zipName);
             using (var zip = ZipFile.Open(fullPath, ZipArchiveMode.Update))
                 zipFiller(zip);
+        }
+
+        private void CreateFileAtFtp(string dirPath, string fileName, string content)
+        {
+            var fullPath = PrepareForFile(dirPath, fileName);
+            File.WriteAllText(fullPath, content);
         }
 
         private string PrepareForFile(string dirPath, string zipName)
