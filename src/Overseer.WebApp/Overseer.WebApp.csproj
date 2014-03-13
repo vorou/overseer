@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\styles.css" />
+    <Content Include="Content\js\app.js" />
     <Content Include="Web.config" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\aws.pubxml" />
@@ -96,9 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\js\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Overseer.Common\Overseer.Common.csproj">
