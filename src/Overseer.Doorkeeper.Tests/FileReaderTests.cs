@@ -13,6 +13,7 @@ namespace Overseer.Doorkeeper.Tests
     public class FileReaderTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Doorkeeper.Tests\ftp";
+        private static readonly Uri FtpUri = new Uri("ftp://localhost");
 
         public FileReaderTests()
         {
@@ -32,7 +33,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_ZipInRootDir_IgnoresIt()
             {
-                CreateZipAtFtp("", "archive.zip", "fileName");
+                CreateZipAtFtp(@".", GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -73,7 +74,7 @@ namespace Overseer.Doorkeeper.Tests
             {
                 var content = "<привет></привет>";
                 CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\",
-                               "panda.zip",
+                               GetRandomZipName(),
                                zip =>
                                {
                                    var entry = zip.CreateEntry(Path.GetRandomFileName());
@@ -91,9 +92,9 @@ namespace Overseer.Doorkeeper.Tests
         public class ImportControl : FileReaderTests
         {
             [Fact]
-            public void ImportControl_ZipWasntMarkedAsImported_ReadsItAgain()
+            public void ImportControl_SecondReadZipWasntMarkedAsImported_ReadsItAgain()
             {
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
 
@@ -105,7 +106,7 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void ImportControl_ReaderWasReset_ReadsAgain()
             {
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", Path.GetRandomFileName());
+                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
                 sut.Reset();
@@ -153,14 +154,14 @@ namespace Overseer.Doorkeeper.Tests
             public void ImportControl_ZipHadZeroLengthThenEntryWasAdded_WontReadItAgain()
             {
                 var dir = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
-                var fileName = "panda.zip";
+                var fileName = GetRandomZipName();
                 var path = PrepareForFile(dir, fileName);
 
                 File.WriteAllBytes(path, new byte[0]);
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
 
-                CreateZipAtFtp(dir, fileName, zip => zip.CreateEntry("entry"));
+                CreateZipAtFtp(dir, fileName, zip => zip.CreateEntry(Path.GetRandomFileName()));
 
                 var actual = sut.ReadNewFiles();
 
@@ -173,9 +174,8 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_BadZip_ReturnsEmpty()
             {
-                var fullDirPath = Path.Combine(FtpMountDir, @"fcs_regions\Adygeja_Resp\notifications\currMonth\");
-                Directory.CreateDirectory(fullDirPath);
-                File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
+                var path = PrepareForFile(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName());
+                File.WriteAllText(path, "bad zip content");
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -184,13 +184,12 @@ namespace Overseer.Doorkeeper.Tests
             }
 
             [Fact]
-            public void Read_BadZipAndGoodZip_ReturnsGoodZip()
+            public void Read_BadZipAndGoodZip_ReturnsOne()
             {
                 var currMonth = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
-                CreateZipAtFtp(currMonth, "good.zip", Path.GetRandomFileName());
-                var fullDirPath = Path.Combine(FtpMountDir, currMonth);
-                Directory.CreateDirectory(fullDirPath);
-                File.WriteAllText(Path.Combine(fullDirPath, "bad.zip"), "bad zip content");
+                CreateZipAtFtp(currMonth, GetRandomZipName(), Path.GetRandomFileName());
+                var path = PrepareForFile(currMonth, GetRandomZipName());
+                File.WriteAllText(path, "bad zip content");
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -202,7 +201,7 @@ namespace Overseer.Doorkeeper.Tests
             public void Read_Always_IgnoresLogsDir()
             {
                 var logsDir = @"fcs_regions\_logs\notifications\currMonth\";
-                CreateZipAtFtp(logsDir, "some.zip", Path.GetRandomFileName());
+                CreateZipAtFtp(logsDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
 
                 var actual = sut.ReadNewFiles();
@@ -213,9 +212,9 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_FailedToDownloadFile_ReturnsEmpty()
             {
-                var sut = new FileReaderTestable(new Uri("ftp://localhost"));
+                var sut = CreateTestableSut();
                 sut.GetFileCoreBody = (client, uri) => { throw new WebException(); };
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some.zip", Path.GetRandomFileName());
+                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
 
                 var actual = sut.ReadNewFiles();
 
@@ -225,39 +224,49 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_FailedToDownloadFile_ContinueToNextFile()
             {
-                var sut = new FileReaderTestable(new Uri("ftp://localhost"));
+                var sut = CreateTestableSut();
                 var shouldThrow = true;
                 sut.GetFileCoreBody = (client, uri) =>
-                {
-                    if (shouldThrow)
-                    {
-                        shouldThrow = false;
-                        throw new WebException();
-                    }
-                    return GetValidNonEmptyZipContent();
-                };
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some1.zip", Path.GetRandomFileName());
-                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "some2.zip", Path.GetRandomFileName());
+                                      {
+                                          if (shouldThrow)
+                                          {
+                                              shouldThrow = false;
+                                              throw new WebException();
+                                          }
+                                          return GetValidNonEmptyZipBytes();
+                                      };
+                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
+                CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", GetRandomZipName(), Path.GetRandomFileName());
 
                 var actual = sut.ReadNewFiles();
 
                 actual.Count().ShouldBe(1);
             }
+
+            private static FileReaderTestable CreateTestableSut()
+            {
+                return new FileReaderTestable(FtpUri);
+            }
         }
 
-        private static byte[] GetValidNonEmptyZipContent()
+        private static string GetRandomZipName()
+        {
+            return Path.ChangeExtension(Path.GetRandomFileName(), "zip");
+        }
+
+        private static byte[] GetValidNonEmptyZipBytes()
         {
             using (var zipContent = new MemoryStream())
             {
                 using (var zip = new ZipArchive(zipContent, ZipArchiveMode.Create))
-                    zip.CreateEntry("entry");
+                    zip.CreateEntry(Path.GetRandomFileName());
                 return zipContent.ToArray();
             }
         }
 
         private static FileReader CreateSut()
         {
-            return new FileReader(new Uri("ftp://localhost"));
+            return new FileReader(FtpUri);
         }
 
         private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)
