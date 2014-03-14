@@ -84,7 +84,7 @@ namespace Overseer.Doorkeeper
                     }
                     if (entries == 0)
                     {
-                        log.InfoFormat("no entries {0}");
+                        log.InfoFormat("no entries {0}", zipUri);
                         MarkZipImported(zipUri);
                     }
                 }
