@@ -2,7 +2,7 @@ using System;
 
 namespace Overseer.Doorkeeper
 {
-    public class SourceFile
+    public class Raw
     {
         public Uri Uri { get; set; }
         public string Content { get; set; }

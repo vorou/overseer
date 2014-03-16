@@ -41,7 +41,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(@".", GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -52,7 +52,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(SomeRegionDir, Path.GetRandomFileName(), Path.GetRandomFileName());
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -67,7 +67,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(targetDirectory, zipName, entryName);
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Single().Uri.ToString().ShouldBe(expected);
             }
@@ -80,7 +80,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(targetDirectory, zipName, entryName);
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Single().Uri.ToString().ShouldBe(expected);
             }
@@ -99,7 +99,7 @@ namespace Overseer.Doorkeeper.Tests
                                });
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Single().Content.ShouldBe(content);
             }
@@ -112,9 +112,9 @@ namespace Overseer.Doorkeeper.Tests
             {
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldNotBeEmpty();
             }
@@ -124,10 +124,10 @@ namespace Overseer.Doorkeeper.Tests
             {
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
                 sut.Reset();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldNotBeEmpty();
             }
@@ -137,10 +137,10 @@ namespace Overseer.Doorkeeper.Tests
             {
                 CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", "entry");
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
                 sut.MarkImported(new Uri("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/entry"));
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -158,10 +158,10 @@ namespace Overseer.Doorkeeper.Tests
 
                 var entryUrl = "ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/yo";
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
                 sut.MarkImported(new Uri(entryUrl));
 
-                var actual = sut.ReadNewFiles().ToList();
+                var actual = sut.GetNewRaws().ToList();
 
                 actual.ShouldContain(f => f.Uri.ToString() == entryUrl);
             }
@@ -173,11 +173,11 @@ namespace Overseer.Doorkeeper.Tests
                 var fileName = GetRandomZipName();
                 CreateFileAtFtp(dir, fileName, "");
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.CreateEntry(Path.GetRandomFileName()));
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -189,11 +189,11 @@ namespace Overseer.Doorkeeper.Tests
                 var fileName = GetRandomZipName();
                 CreateZipAtFtp(dir, fileName, _ => { });
                 var sut = CreateSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.CreateEntry(Path.GetRandomFileName()));
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -207,7 +207,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateFileAtFtp(SomeRegionDir, GetRandomZipName(), "bad zip content");
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -219,7 +219,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateFileAtFtp(SomeRegionDir, GetRandomZipName(), "bad zip content");
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Count().ShouldBe(1);
             }
@@ -231,7 +231,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(logsDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -243,7 +243,7 @@ namespace Overseer.Doorkeeper.Tests
                 sut.GetFileCoreBody = (client, uri) => { throw new WebException(); };
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldBeEmpty();
             }
@@ -265,14 +265,14 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Count().ShouldBe(1);
             }
 
-            private static FileReaderTestable CreateTestableSut()
+            private static GoldenRetrieverTestable CreateTestableSut()
             {
-                return new FileReaderTestable(FtpUri);
+                return new GoldenRetrieverTestable(FtpUri);
             }
         }
 
@@ -286,10 +286,10 @@ namespace Overseer.Doorkeeper.Tests
                 var entryName = Path.GetRandomFileName();
                 CreateZipAtFtp(dir, fileName, entryName);
                 var sut = CreateCachingSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.ShouldNotBeEmpty();
             }
@@ -310,10 +310,10 @@ namespace Overseer.Doorkeeper.Tests
                                        stream.Write(content);
                                });
                 var sut = CreateCachingSut();
-                sut.ReadNewFiles().ToList();
+                sut.GetNewRaws().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
-                var actual = sut.ReadNewFiles();
+                var actual = sut.GetNewRaws();
 
                 actual.Single().Content.ShouldBe(content);
             }
@@ -334,14 +334,14 @@ namespace Overseer.Doorkeeper.Tests
             }
         }
 
-        private static FileReader CreateSut()
+        private static GoldenRetriever CreateSut()
         {
-            return new FileReader(FtpUri);
+            return new GoldenRetriever(FtpUri);
         }
 
-        private static FileReader CreateCachingSut()
+        private static GoldenRetriever CreateCachingSut()
         {
-            return new FileReader(FtpUri, readFromCache: true);
+            return new GoldenRetriever(FtpUri, readFromCache: true);
         }
 
         private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)

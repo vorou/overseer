@@ -10,16 +10,16 @@ using Overseer.Common;
 
 namespace Overseer.Doorkeeper
 {
-    public class FileReader : IFileReader
+    public class GoldenRetriever : IGoldenRetriever
     {
-        private readonly ILog log = LogManager.GetLogger(typeof (FileReader));
+        private readonly ILog log = LogManager.GetLogger(typeof (GoldenRetriever));
 
         private readonly Uri ftp;
         private readonly bool readFromCache;
         private readonly ElasticClient elastic;
         private readonly Dictionary<Uri, List<string>> zipToEntries = new Dictionary<Uri, List<string>>();
 
-        public FileReader(Uri ftp, bool readFromCache = false)
+        public GoldenRetriever(Uri ftp, bool readFromCache = false)
         {
             this.ftp = ftp;
             this.readFromCache = readFromCache;
@@ -28,7 +28,7 @@ namespace Overseer.Doorkeeper
             log.InfoFormat("using {0}", ftp);
         }
 
-        public IEnumerable<SourceFile> ReadNewFiles()
+        public IEnumerable<Raw> GetNewRaws()
         {
             // .ToList() is to fetch the dirs and release the ftp connection
             var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
@@ -99,17 +99,17 @@ namespace Overseer.Doorkeeper
             return Directory.Exists(cacheDirPath);
         }
 
-        private static IEnumerable<SourceFile> GetSourceFilesFromCache(Uri zipUri)
+        private static IEnumerable<Raw> GetSourceFilesFromCache(Uri zipUri)
         {
             var cacheDirPath = GetCacheDirPath(zipUri.ToString());
             foreach (var file in Directory.GetFiles(cacheDirPath))
                 yield return CreateSourceFile(zipUri, Path.GetFileName(file), File.ReadAllText(file));
         }
 
-        private static SourceFile CreateSourceFile(Uri zipUri, string entryName, string entryContent)
+        private static Raw CreateSourceFile(Uri zipUri, string entryName, string entryContent)
         {
             var fullUri = zipUri + "/" + entryName;
-            var sourceFile = new SourceFile {Uri = new Uri(fullUri), Content = entryContent};
+            var sourceFile = new Raw {Uri = new Uri(fullUri), Content = entryContent};
             return sourceFile;
         }
 

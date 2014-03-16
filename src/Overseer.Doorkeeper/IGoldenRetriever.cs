@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Overseer.Doorkeeper
 {
-    public interface IFileReader
+    public interface IGoldenRetriever
     {
-        IEnumerable<SourceFile> ReadNewFiles();
+        IEnumerable<Raw> GetNewRaws();
         void MarkImported(Uri src);
     }
 }

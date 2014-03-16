@@ -12,7 +12,7 @@ namespace Overseer.Doorkeeper
     public class TenderImporter
     {
         private readonly ILog log = LogManager.GetLogger(typeof (TenderImporter));
-        private readonly IFileReader reader;
+        private readonly IGoldenRetriever reader;
         private readonly ITenderRepository repo;
         private int countImported;
         private readonly Dictionary<string, string> folderNameToRegionId = new Dictionary<string, string>
@@ -111,7 +111,7 @@ namespace Overseer.Doorkeeper
                                                                                {"Zabajkalskij_kraj_Aginskij_Burjatskij_okrug", "75"}
                                                                            };
 
-        public TenderImporter(IFileReader reader, ITenderRepository repo)
+        public TenderImporter(IGoldenRetriever reader, ITenderRepository repo)
         {
             this.reader = reader;
             this.repo = repo;
@@ -120,7 +120,7 @@ namespace Overseer.Doorkeeper
         public void Import()
         {
             var stopwatch = Stopwatch.StartNew();
-            foreach (var file in reader.ReadNewFiles())
+            foreach (var file in reader.GetNewRaws())
             {
                 log.InfoFormat("importing file {0}", file.Uri);
                 var result = new Tender();

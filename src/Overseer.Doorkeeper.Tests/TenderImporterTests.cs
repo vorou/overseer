@@ -129,7 +129,7 @@ namespace Overseer.Doorkeeper.Tests
             var src = ValidUri;
             ImportValidXmlWith("", src);
 
-            var reader = fixture.Create<IFileReader>();
+            var reader = fixture.Create<IGoldenRetriever>();
             A.CallTo(() => reader.MarkImported(new Uri(src))).MustHaveHappened();
         }
 
@@ -192,9 +192,9 @@ namespace Overseer.Doorkeeper.Tests
         private void Import(string xml, string path = ValidUri)
         {
             fixture.Freeze<ITenderRepository>();
-            var fileReader = fixture.Freeze<IFileReader>();
+            var fileReader = fixture.Freeze<IGoldenRetriever>();
             var sut = fixture.Create<TenderImporter>();
-            A.CallTo(() => fileReader.ReadNewFiles()).Returns(new[] {new SourceFile {Content = xml, Uri = new Uri(path)}});
+            A.CallTo(() => fileReader.GetNewRaws()).Returns(new[] {new Raw {Content = xml, Uri = new Uri(path)}});
 
             sut.Import();
         }
