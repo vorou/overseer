@@ -210,7 +210,6 @@ namespace Overseer.Doorkeeper
         private void MarkZipImported(Uri zipUri)
         {
             elastic.Index(new ImportEntry {Id = zipUri.ToString()});
-            elastic.Refresh<ImportEntry>();
         }
     }
 }
