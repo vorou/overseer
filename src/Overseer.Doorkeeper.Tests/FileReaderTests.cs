@@ -69,7 +69,7 @@ namespace Overseer.Doorkeeper.Tests
 
                 var actual = sut.ReadNewFiles();
 
-                actual.Single().Uri.ShouldBe(expected);
+                actual.Single().Uri.ToString().ShouldBe(expected);
             }
 
             [Theory]
@@ -82,7 +82,7 @@ namespace Overseer.Doorkeeper.Tests
 
                 var actual = sut.ReadNewFiles();
 
-                actual.Single().Uri.ShouldBe(expected);
+                actual.Single().Uri.ToString().ShouldBe(expected);
             }
 
             [Fact]
@@ -138,7 +138,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(@"fcs_regions\Adygeja_Resp\notifications\currMonth\", "panda.zip", "entry");
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
-                sut.MarkImported("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/entry");
+                sut.MarkImported(new Uri("ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/entry"));
 
                 var actual = sut.ReadNewFiles();
 
@@ -159,11 +159,11 @@ namespace Overseer.Doorkeeper.Tests
                 var entryUrl = "ftp://localhost/fcs_regions/Adygeja_Resp/notifications/currMonth/panda.zip/yo";
                 var sut = CreateSut();
                 sut.ReadNewFiles().ToList();
-                sut.MarkImported(entryUrl);
+                sut.MarkImported(new Uri(entryUrl));
 
                 var actual = sut.ReadNewFiles().ToList();
 
-                actual.ShouldContain(f => f.Uri == entryUrl);
+                actual.ShouldContain(f => f.Uri.ToString() == entryUrl);
             }
 
             [Fact]

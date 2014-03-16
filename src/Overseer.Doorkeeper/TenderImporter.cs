@@ -138,7 +138,7 @@ namespace Overseer.Doorkeeper
                 if (tenderIdElement == null)
                     continue;
 
-                var regionName = new Uri(file.Uri).Segments[2].TrimEnd('/');
+                var regionName = file.Uri.Segments[2].TrimEnd('/');
                 if (!folderNameToRegionId.ContainsKey(regionName))
                 {
                     log.WarnFormat("unkown region {0}", regionName);
@@ -174,7 +174,7 @@ namespace Overseer.Doorkeeper
 
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
-                result.Source = file.Uri;
+                result.Source = file.Uri.ToString();
                 repo.Save(result);
                 reader.MarkImported(file.Uri);
                 countImported++;

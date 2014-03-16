@@ -109,7 +109,7 @@ namespace Overseer.Doorkeeper
         private static SourceFile CreateSourceFile(Uri zipUri, string entryName, string entryContent)
         {
             var fullUri = zipUri + "/" + entryName;
-            var sourceFile = new SourceFile {Uri = fullUri, Content = entryContent};
+            var sourceFile = new SourceFile {Uri = new Uri(fullUri), Content = entryContent};
             return sourceFile;
         }
 
@@ -198,11 +198,10 @@ namespace Overseer.Doorkeeper
             return request.DownloadData(uri);
         }
 
-        public void MarkImported(string src)
+        public void MarkImported(Uri src)
         {
-            var fullUri = new Uri(src);
-            var entryName = fullUri.Segments.Last();
-            var zipUri = new Uri(src.Substring(0, src.Length - (entryName.Length + 1)));
+            var entryName = src.Segments.Last();
+            var zipUri = new Uri(src.ToString().Substring(0, src.ToString().Length - (entryName.Length + 1)));
             zipToEntries[zipUri].Remove(entryName);
             if (!zipToEntries[zipUri].Any())
                 MarkZipImported(zipUri);
