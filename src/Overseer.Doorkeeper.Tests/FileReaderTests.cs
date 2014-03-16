@@ -285,7 +285,7 @@ namespace Overseer.Doorkeeper.Tests
                 var fileName = GetRandomZipName();
                 var entryName = Path.GetRandomFileName();
                 CreateZipAtFtp(dir, fileName, entryName);
-                var sut = CreateSut();
+                var sut = CreateCachingSut();
                 sut.ReadNewFiles().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
@@ -309,7 +309,7 @@ namespace Overseer.Doorkeeper.Tests
                                    using (var stream = new StreamWriter(entry.Open()))
                                        stream.Write(content);
                                });
-                var sut = CreateSut();
+                var sut = CreateCachingSut();
                 sut.ReadNewFiles().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
@@ -337,6 +337,11 @@ namespace Overseer.Doorkeeper.Tests
         private static FileReader CreateSut()
         {
             return new FileReader(FtpUri);
+        }
+
+        private static FileReader CreateCachingSut()
+        {
+            return new FileReader(FtpUri, readFromCache: true);
         }
 
         private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)

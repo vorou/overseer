@@ -15,12 +15,14 @@ namespace Overseer.Doorkeeper
         private readonly ILog log = LogManager.GetLogger(typeof (FileReader));
 
         private readonly Uri ftp;
+        private readonly bool readFromCache;
         private readonly ElasticClient elastic;
         private readonly Dictionary<Uri, List<string>> zipToEntries = new Dictionary<Uri, List<string>>();
 
-        public FileReader(Uri ftp)
+        public FileReader(Uri ftp, bool readFromCache = false)
         {
             this.ftp = ftp;
+            this.readFromCache = readFromCache;
             elastic = ElasticClientFactory.Create();
             elastic.MapFromAttributes<ImportEntry>();
             log.InfoFormat("using {0}", ftp);
@@ -44,7 +46,7 @@ namespace Overseer.Doorkeeper
                         continue;
                     }
 
-                    if (IsCached(zipUri))
+                    if (readFromCache && IsCached(zipUri))
                         foreach (var sourceFile in GetSourceFilesFromCache(zipUri))
                             yield return sourceFile;
 
