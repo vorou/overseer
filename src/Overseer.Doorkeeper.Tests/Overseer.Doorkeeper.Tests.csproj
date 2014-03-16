@@ -80,7 +80,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileReaderTests.cs" />
+    <Compile Include="GoldenRetrieverTests.cs" />
     <Compile Include="GoldenRetrieverTestable.cs" />
     <Compile Include="TenderImporterTests.cs" />
   </ItemGroup>

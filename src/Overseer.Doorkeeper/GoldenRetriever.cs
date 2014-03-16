@@ -17,7 +17,7 @@ namespace Overseer.Doorkeeper
         private readonly Uri ftp;
         private readonly bool readFromCache;
         private readonly ElasticClient elastic;
-        private readonly Dictionary<Uri, List<string>> zipToEntries = new Dictionary<Uri, List<string>>();
+        private readonly Dictionary<Uri, HashSet<string>> zipToEntries = new Dictionary<Uri, HashSet<string>>();
 
         public GoldenRetriever(Uri ftp, bool readFromCache = false)
         {
@@ -134,7 +134,7 @@ namespace Overseer.Doorkeeper
         private void AddEntry(Uri zipUri, ZipArchiveEntry zipEntry)
         {
             if (!zipToEntries.ContainsKey(zipUri))
-                zipToEntries.Add(zipUri, new List<string>());
+                zipToEntries.Add(zipUri, new HashSet<string>());
             zipToEntries[zipUri].Add(zipEntry.Name);
         }
 

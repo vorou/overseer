@@ -9,13 +9,13 @@ using Xunit.Extensions;
 
 namespace Overseer.Doorkeeper.Tests
 {
-    public class FileReaderTests
+    public class GoldenRetrieverTests
     {
         private readonly string FtpMountDir = @"D:\code\Overseer\src\Overseer.Doorkeeper.Tests\ftp";
         private readonly string SomeRegionDir = @"fcs_regions\Adygeja_Resp\notifications\currMonth\";
         private static readonly Uri FtpUri = new Uri("ftp://localhost");
 
-        public FileReaderTests()
+        public GoldenRetrieverTests()
         {
             ClearImport();
             ClearFtp();
@@ -33,7 +33,7 @@ namespace Overseer.Doorkeeper.Tests
             Directory.CreateDirectory(FtpMountDir);
         }
 
-        public class FileRetrieving : FileReaderTests
+        public class FileRetrieving : GoldenRetrieverTests
         {
             [Fact]
             public void Read_ZipInRootDir_IgnoresIt()
@@ -105,7 +105,7 @@ namespace Overseer.Doorkeeper.Tests
             }
         }
 
-        public class ImportControl : FileReaderTests
+        public class ImportControl : GoldenRetrieverTests
         {
             [Fact]
             public void ImportControl_SecondReadZipWasntMarkedAsImported_ReadsItAgain()
@@ -199,7 +199,7 @@ namespace Overseer.Doorkeeper.Tests
             }
         }
 
-        public class BadStuff : FileReaderTests
+        public class BadStuff : GoldenRetrieverTests
         {
             [Fact]
             public void Read_BadZip_ReturnsEmpty()
@@ -276,7 +276,7 @@ namespace Overseer.Doorkeeper.Tests
             }
         }
 
-        public class Cache : FileReaderTests
+        public class Cache : GoldenRetrieverTests
         {
             [Fact]
             public void Cache_FileHadAnEntryThenEntryWasRemoved_ShouldStillReturnTheEntry()
