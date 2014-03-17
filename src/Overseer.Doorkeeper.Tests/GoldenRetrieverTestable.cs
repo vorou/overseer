@@ -3,9 +3,9 @@ using System.Net;
 
 namespace Overseer.Doorkeeper.Tests
 {
-    internal class GoldenRetrieverTestable : GoldenRetriever
+    internal class FtpClientTestable : FtpClient
     {
-        public GoldenRetrieverTestable(Uri ftp)
+        public FtpClientTestable(Uri ftp)
             : base(ftp)
         {
         }

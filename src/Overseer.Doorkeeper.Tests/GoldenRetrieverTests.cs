@@ -239,8 +239,8 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_FailedToDownloadFile_ReturnsEmpty()
             {
-                var sut = CreateTestableSut();
-                sut.GetFileCoreBody = (client, uri) => { throw new WebException(); };
+                var ftpClient = new FtpClientTestable(FtpUri) {GetFileCoreBody = (client, uri) => { throw new WebException(); }};
+                var sut = CreateSut(ftpClient);
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
                 var actual = sut.GetNewRaws();
@@ -251,17 +251,20 @@ namespace Overseer.Doorkeeper.Tests
             [Fact]
             public void Read_FailedToDownloadFile_ContinueToNextFile()
             {
-                var sut = CreateTestableSut();
                 var shouldThrow = true;
-                sut.GetFileCoreBody = (client, uri) =>
-                                      {
-                                          if (shouldThrow)
-                                          {
-                                              shouldThrow = false;
-                                              throw new WebException();
-                                          }
-                                          return GetValidNonEmptyZipBytes();
-                                      };
+                var ftpClient = new FtpClientTestable(FtpUri)
+                {
+                    GetFileCoreBody = (client, uri) =>
+                    {
+                        if (shouldThrow)
+                        {
+                            shouldThrow = false;
+                            throw new WebException();
+                        }
+                        return GetValidNonEmptyZipBytes();
+                    }
+                };
+                var sut = CreateSut(ftpClient);
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
 
@@ -270,9 +273,9 @@ namespace Overseer.Doorkeeper.Tests
                 actual.Count().ShouldBe(1);
             }
 
-            private static GoldenRetrieverTestable CreateTestableSut()
+            private static GoldenRetriever CreateSut(FtpClient ftpClient)
             {
-                return new GoldenRetrieverTestable(FtpUri);
+                return new GoldenRetriever(FtpUri) {FtpClient = ftpClient};
             }
         }
 

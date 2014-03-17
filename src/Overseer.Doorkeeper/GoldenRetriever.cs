@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using log4net;
 using Nest;
 using Overseer.Common;
@@ -14,14 +13,14 @@ namespace Overseer.Doorkeeper
     {
         private readonly ILog log = LogManager.GetLogger(typeof (GoldenRetriever));
 
-        private readonly Uri ftp;
+        public FtpClient FtpClient { private get; set; }
         private readonly bool readFromCache;
         private readonly ElasticClient elastic;
         private readonly Dictionary<Uri, HashSet<string>> zipToEntries = new Dictionary<Uri, HashSet<string>>();
 
         public GoldenRetriever(Uri ftp, bool readFromCache = false)
         {
-            this.ftp = ftp;
+            FtpClient = new FtpClient(ftp);
             this.readFromCache = readFromCache;
             elastic = ElasticClientFactory.Create();
             elastic.MapFromAttributes<ImportEntry>();
@@ -31,7 +30,7 @@ namespace Overseer.Doorkeeper
         public IEnumerable<Raw> GetNewRaws()
         {
             // .ToList() is to fetch the dirs and release the ftp connection
-            var regionNames = ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
+            var regionNames = FtpClient.ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
 #if TEST
             regionNames = regionNames.GetRange(0, 1);
 #endif
@@ -50,7 +49,7 @@ namespace Overseer.Doorkeeper
                         foreach (var cachedRaw in GetCachedRaws(zipUri))
                             yield return cachedRaw;
 
-                    var content = Download(zipUri);
+                    var content = FtpClient.Download(zipUri);
                     if (content == null)
                         continue;
                     if (content.Length == 0)
@@ -140,62 +139,14 @@ namespace Overseer.Doorkeeper
 
         private IEnumerable<Uri> GetZipUris(string regionName)
         {
-            return ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
-                .Union(ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName)))
-                .Where(p => Path.GetExtension(p.ToString()) == ".zip");
+            return FtpClient.ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
+                            .Union(FtpClient.ListDirectory(string.Format("fcs_regions/{0}/notifications/prevMonth/", regionName)))
+                            .Where(p => Path.GetExtension(p.ToString()) == ".zip");
         }
 
         public void Reset()
         {
             elastic.DeleteMapping<ImportEntry>();
-        }
-
-        private IEnumerable<Uri> ListDirectory(string path)
-        {
-            var baseUri = new Uri(ftp, path);
-            var ftpRequest = (FtpWebRequest) WebRequest.Create(baseUri);
-            ftpRequest.Credentials = new NetworkCredential("free", "free");
-            ftpRequest.Method = WebRequestMethods.Ftp.ListDirectory;
-            FtpWebResponse response;
-            try
-            {
-                response = (FtpWebResponse) ftpRequest.GetResponse();
-            }
-            catch (WebException)
-            {
-                log.WarnFormat("failed to list directory {0}", path);
-                yield break;
-            }
-
-            using (var streamReader = new StreamReader(response.GetResponseStream()))
-                while (true)
-                {
-                    var line = streamReader.ReadLine();
-                    if (line == null)
-                        break;
-                    yield return new Uri(baseUri, line);
-                }
-        }
-
-        private byte[] Download(Uri uri)
-        {
-            var request = new WebClient {Credentials = new NetworkCredential("free", "free")};
-            byte[] newFileData;
-            try
-            {
-                newFileData = GetFileCore(request, uri);
-            }
-            catch (WebException)
-            {
-                log.ErrorFormat("failed to download file {0}", uri);
-                return null;
-            }
-            return newFileData;
-        }
-
-        protected virtual byte[] GetFileCore(WebClient request, Uri uri)
-        {
-            return request.DownloadData(uri);
         }
 
         public void MarkImported(Uri src)
