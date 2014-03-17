@@ -94,6 +94,7 @@
     <Compile Include="GoldenRetriever.cs" />
     <Compile Include="IGoldenRetriever.cs" />
     <Compile Include="ImportEntry.cs" />
+    <Compile Include="ImportJournal.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Raw.cs" />
     <Compile Include="TenderImporter.cs" />

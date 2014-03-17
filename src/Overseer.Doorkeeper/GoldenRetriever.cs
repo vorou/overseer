@@ -16,14 +16,15 @@ namespace Overseer.Doorkeeper
         public FtpClient FtpClient { private get; set; }
         private readonly bool readFromCache;
         private readonly ElasticClient elastic;
-        private readonly Dictionary<Uri, HashSet<string>> zipToEntries = new Dictionary<Uri, HashSet<string>>();
+        private readonly ImportJournal importJournal;
 
         public GoldenRetriever(Uri ftp, bool readFromCache = false)
         {
-            FtpClient = new FtpClient(ftp);
             this.readFromCache = readFromCache;
+            FtpClient = new FtpClient(ftp);
             elastic = ElasticClientFactory.Create();
             elastic.MapFromAttributes<ImportEntry>();
+            importJournal = new ImportJournal(elastic);
             log.InfoFormat("using {0}", ftp);
         }
 
@@ -55,7 +56,7 @@ namespace Overseer.Doorkeeper
                     if (content.Length == 0)
                     {
                         log.InfoFormat("skipping empty zip {0}", zipUri);
-                        MarkZipImported(zipUri);
+                        importJournal.MarkZipImported(zipUri);
                         continue;
                     }
 
@@ -79,7 +80,7 @@ namespace Overseer.Doorkeeper
                         var raw = new Raw(zipUri, zipEntry.FullName, rawContent);
 
                         entries++;
-                        RememberEntry(zipUri, zipEntry);
+                        importJournal.RememberEntry(zipUri, zipEntry.FullName);
 
                         SaveToCache(zipUri.ToString(), zipEntry.FullName, rawContent);
 
@@ -88,7 +89,7 @@ namespace Overseer.Doorkeeper
                     if (entries == 0)
                     {
                         log.InfoFormat("no entries {0}", zipUri);
-                        MarkZipImported(zipUri);
+                        importJournal.MarkZipImported(zipUri);
                     }
                 }
             }
@@ -130,13 +131,6 @@ namespace Overseer.Doorkeeper
             return uri.Replace(':', '_').Replace('/', '_');
         }
 
-        private void RememberEntry(Uri zipUri, ZipArchiveEntry zipEntry)
-        {
-            if (!zipToEntries.ContainsKey(zipUri))
-                zipToEntries.Add(zipUri, new HashSet<string>());
-            zipToEntries[zipUri].Add(zipEntry.Name);
-        }
-
         private IEnumerable<Uri> GetZipUris(string regionName)
         {
             return FtpClient.ListDirectory(string.Format("fcs_regions/{0}/notifications/currMonth/", regionName))
@@ -146,21 +140,12 @@ namespace Overseer.Doorkeeper
 
         public void Reset()
         {
-            elastic.DeleteMapping<ImportEntry>();
+            importJournal.Reset();
         }
 
-        public void MarkImported(Uri src)
+        public void MarkImported(Uri entryUri)
         {
-            var entryName = src.Segments.Last();
-            var zipUri = new Uri(src.ToString().Substring(0, src.ToString().Length - (entryName.Length + 1)));
-            zipToEntries[zipUri].Remove(entryName);
-            if (!zipToEntries[zipUri].Any())
-                MarkZipImported(zipUri);
-        }
-
-        private void MarkZipImported(Uri zipUri)
-        {
-            elastic.Index(new ImportEntry {Id = zipUri.ToString()});
+            importJournal.MarkImported(entryUri);
         }
     }
 }
