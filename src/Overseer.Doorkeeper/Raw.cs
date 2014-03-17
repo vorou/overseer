@@ -4,8 +4,23 @@ namespace Overseer.Doorkeeper
 {
     public class Raw
     {
-        public Uri Uri { get; set; }
-        public string Content { get; set; }
+        public Raw(Uri zipUri, string entryName, string content) : this(content)
+        {
+            Uri = new Uri(zipUri + "/" + entryName);
+        }
+
+        public Raw(Uri entryUri, string content) : this(content)
+        {
+            Uri = entryUri;
+        }
+
+        private Raw(string content)
+        {
+            Content = content;
+        }
+
+        public Uri Uri { get; private set; }
+        public string Content { get; private set; }
 
         public override string ToString()
         {

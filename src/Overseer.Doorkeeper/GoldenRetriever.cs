@@ -76,12 +76,14 @@ namespace Overseer.Doorkeeper
                     {
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
 
+                        var entryContent = new StreamReader(zipEntry.Open()).ReadToEnd();
+                        var raw = new Raw(zipUri, zipEntry.ToString(), entryContent);
+
                         entries++;
                         AddEntry(zipUri, zipEntry);
 
-                        var entryContent = new StreamReader(zipEntry.Open()).ReadToEnd();
-                        var raw = CreateRaw(zipUri, zipEntry.ToString(), entryContent);
                         SaveToCache(zipUri.ToString(), zipEntry.ToString(), entryContent);
+
                         yield return raw;
                     }
                     if (entries == 0)
@@ -108,14 +110,7 @@ namespace Overseer.Doorkeeper
         {
             var cacheDirPath = GetCacheDirPath(zipUri.ToString());
             foreach (var file in Directory.GetFiles(cacheDirPath))
-                yield return CreateRaw(zipUri, Path.GetFileName(file), File.ReadAllText(file));
-        }
-
-        private static Raw CreateRaw(Uri zipUri, string entryName, string entryContent)
-        {
-            var fullUri = zipUri + "/" + entryName;
-            var raw = new Raw {Uri = new Uri(fullUri), Content = entryContent};
-            return raw;
+                yield return new Raw(zipUri, Path.GetFileName(file), File.ReadAllText(file));
         }
 
         private static void SaveToCache(string zipUri, string entryName, string entryContent)
