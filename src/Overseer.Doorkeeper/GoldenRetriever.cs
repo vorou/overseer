@@ -76,13 +76,13 @@ namespace Overseer.Doorkeeper
                     {
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
 
-                        var entryContent = new StreamReader(zipEntry.Open()).ReadToEnd();
-                        var raw = new Raw(zipUri, zipEntry.ToString(), entryContent);
+                        var rawContent = new StreamReader(zipEntry.Open()).ReadToEnd();
+                        var raw = new Raw(zipUri, zipEntry.FullName, rawContent);
 
                         entries++;
-                        AddEntry(zipUri, zipEntry);
+                        RememberEntry(zipUri, zipEntry);
 
-                        SaveToCache(zipUri.ToString(), zipEntry.ToString(), entryContent);
+                        SaveToCache(zipUri.ToString(), zipEntry.FullName, rawContent);
 
                         yield return raw;
                     }
@@ -131,7 +131,7 @@ namespace Overseer.Doorkeeper
             return uri.Replace(':', '_').Replace('/', '_');
         }
 
-        private void AddEntry(Uri zipUri, ZipArchiveEntry zipEntry)
+        private void RememberEntry(Uri zipUri, ZipArchiveEntry zipEntry)
         {
             if (!zipToEntries.ContainsKey(zipUri))
                 zipToEntries.Add(zipUri, new HashSet<string>());
