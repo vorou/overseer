@@ -40,22 +40,22 @@ namespace Overseer.Doorkeeper
                 log.InfoFormat("importing region {0}", regionName);
                 foreach (var zipUri in GetZipUris(regionName))
                 {
-                    if (elastic.Get<ImportEntry>(zipUri.ToString()) != null)
+                    if (IsImported(zipUri))
                     {
                         log.InfoFormat("already imported, skipping {0}", zipUri);
                         continue;
                     }
 
                     if (readFromCache && IsCached(zipUri))
-                        foreach (var sourceFile in GetSourceFilesFromCache(zipUri))
-                            yield return sourceFile;
+                        foreach (var cachedRaw in GetCachedRaws(zipUri))
+                            yield return cachedRaw;
 
-                    var content = GetFile(zipUri);
+                    var content = Download(zipUri);
                     if (content == null)
                         continue;
                     if (content.Length == 0)
                     {
-                        log.InfoFormat("empty, skipping {0}", zipUri);
+                        log.InfoFormat("skipping empty zip {0}", zipUri);
                         MarkZipImported(zipUri);
                         continue;
                     }
@@ -80,9 +80,9 @@ namespace Overseer.Doorkeeper
                         AddEntry(zipUri, zipEntry);
 
                         var entryContent = new StreamReader(zipEntry.Open()).ReadToEnd();
-                        var sourceFile = CreateSourceFile(zipUri, zipEntry.ToString(), entryContent);
+                        var raw = CreateRaw(zipUri, zipEntry.ToString(), entryContent);
                         SaveToCache(zipUri.ToString(), zipEntry.ToString(), entryContent);
-                        yield return sourceFile;
+                        yield return raw;
                     }
                     if (entries == 0)
                     {
@@ -93,24 +93,29 @@ namespace Overseer.Doorkeeper
             }
         }
 
+        private bool IsImported(Uri zipUri)
+        {
+            return elastic.Get<ImportEntry>(zipUri.ToString()) != null;
+        }
+
         private static bool IsCached(Uri zipUri)
         {
             var cacheDirPath = GetCacheDirPath(zipUri.ToString());
             return Directory.Exists(cacheDirPath);
         }
 
-        private static IEnumerable<Raw> GetSourceFilesFromCache(Uri zipUri)
+        private static IEnumerable<Raw> GetCachedRaws(Uri zipUri)
         {
             var cacheDirPath = GetCacheDirPath(zipUri.ToString());
             foreach (var file in Directory.GetFiles(cacheDirPath))
-                yield return CreateSourceFile(zipUri, Path.GetFileName(file), File.ReadAllText(file));
+                yield return CreateRaw(zipUri, Path.GetFileName(file), File.ReadAllText(file));
         }
 
-        private static Raw CreateSourceFile(Uri zipUri, string entryName, string entryContent)
+        private static Raw CreateRaw(Uri zipUri, string entryName, string entryContent)
         {
             var fullUri = zipUri + "/" + entryName;
-            var sourceFile = new Raw {Uri = new Uri(fullUri), Content = entryContent};
-            return sourceFile;
+            var raw = new Raw {Uri = new Uri(fullUri), Content = entryContent};
+            return raw;
         }
 
         private static void SaveToCache(string zipUri, string entryName, string entryContent)
@@ -177,7 +182,7 @@ namespace Overseer.Doorkeeper
                 }
         }
 
-        private byte[] GetFile(Uri uri)
+        private byte[] Download(Uri uri)
         {
             var request = new WebClient {Credentials = new NetworkCredential("free", "free")};
             byte[] newFileData;
