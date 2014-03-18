@@ -40,7 +40,7 @@ namespace Overseer.Doorkeeper
                 log.InfoFormat("importing region {0}", regionName);
                 foreach (var zipUri in GetZipUris(regionName))
                 {
-                    if (IsImported(zipUri))
+                    if (importJournal.IsImported(zipUri))
                     {
                         log.InfoFormat("already imported, skipping {0}", zipUri);
                         continue;
@@ -93,11 +93,6 @@ namespace Overseer.Doorkeeper
                     }
                 }
             }
-        }
-
-        private bool IsImported(Uri zipUri)
-        {
-            return elastic.Get<ImportEntry>(zipUri.ToString()) != null;
         }
 
         private static bool IsCached(Uri zipUri)

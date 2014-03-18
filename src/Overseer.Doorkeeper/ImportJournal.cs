@@ -40,5 +40,10 @@ namespace Overseer.Doorkeeper
                 zipToEntries.Add(zipUri, new HashSet<string>());
             zipToEntries[zipUri].Add(entryName);
         }
+
+        public bool IsImported(Uri zipUri)
+        {
+            return elastic.Get<ImportEntry>(zipUri.ToString()) != null;
+        }
     }
 }
