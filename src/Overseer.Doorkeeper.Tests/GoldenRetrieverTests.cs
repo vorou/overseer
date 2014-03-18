@@ -23,7 +23,7 @@ namespace Overseer.Doorkeeper.Tests
 
         private static void ClearImport()
         {
-            CreateSut().Reset();
+            CreateSut().ResetJournal();
         }
 
         private void ClearFtp()
@@ -125,7 +125,7 @@ namespace Overseer.Doorkeeper.Tests
                 CreateZipAtFtp(SomeRegionDir, GetRandomZipName(), Path.GetRandomFileName());
                 var sut = CreateSut();
                 sut.GetNewRaws().ToList();
-                sut.Reset();
+                sut.ResetJournal();
 
                 var actual = sut.GetNewRaws();
 
@@ -282,22 +282,6 @@ namespace Overseer.Doorkeeper.Tests
         public class Cache : GoldenRetrieverTests
         {
             [Fact]
-            public void Cache_FileHadAnEntryThenEntryWasRemoved_ShouldStillReturnTheEntry()
-            {
-                var dir = SomeRegionDir;
-                var fileName = GetRandomZipName();
-                var entryName = Path.GetRandomFileName();
-                CreateZipAtFtp(dir, fileName, entryName);
-                var sut = CreateCachingSut();
-                sut.GetNewRaws().ToList();
-
-                CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
-                var actual = sut.GetNewRaws();
-
-                actual.ShouldNotBeEmpty();
-            }
-
-            [Fact]
             public void Cache_FileHadAnEntryThenEntryWasRemoved_ShouldStillReturnProperContent()
             {
                 var dir = SomeRegionDir;
@@ -312,7 +296,7 @@ namespace Overseer.Doorkeeper.Tests
                                    using (var stream = new StreamWriter(entry.Open()))
                                        stream.Write(content);
                                });
-                var sut = CreateCachingSut();
+                var sut = CreateCachingSutWithEmptyCache();
                 sut.GetNewRaws().ToList();
 
                 CreateZipAtFtp(dir, fileName, zip => zip.GetEntry(entryName).Delete());
@@ -342,9 +326,11 @@ namespace Overseer.Doorkeeper.Tests
             return new GoldenRetriever(FtpUri);
         }
 
-        private static GoldenRetriever CreateCachingSut()
+        private static GoldenRetriever CreateCachingSutWithEmptyCache()
         {
-            return new GoldenRetriever(FtpUri, readFromCache: true);
+            var sut = new GoldenRetriever(FtpUri, readFromCache: true);
+            sut.ResetCache();
+            return sut;
         }
 
         private void CreateZipAtFtp(string dirPath, string zipName, string zipEntryName)

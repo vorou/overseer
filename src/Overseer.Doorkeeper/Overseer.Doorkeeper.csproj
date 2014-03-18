@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CachedRaw.cs" />
     <Compile Include="Doorkeeper.cs" />
     <Compile Include="FtpClient.cs" />
     <Compile Include="GoldenRetriever.cs" />

@@ -24,6 +24,7 @@ namespace Overseer.Doorkeeper
             FtpClient = new FtpClient(ftp);
             elastic = ElasticClientFactory.Create();
             elastic.MapFromAttributes<ImportEntry>();
+            elastic.MapFromAttributes<CachedRaw>();
             importJournal = new ImportJournal(elastic);
             log.InfoFormat("using {0}", ftp);
         }
@@ -95,35 +96,28 @@ namespace Overseer.Doorkeeper
             }
         }
 
-        private static bool IsCached(Uri zipUri)
+        private bool IsCached(Uri zipUri)
         {
-            var cacheDirPath = GetCacheDirPath(zipUri.ToString());
-            return Directory.Exists(cacheDirPath);
+            var zipUriString = zipUri.ToString();
+            var cachedRaws = GetCachedRaws(zipUriString);
+            return cachedRaws.Any();
         }
 
-        private static IEnumerable<Raw> GetCachedRaws(Uri zipUri)
+        private IEnumerable<CachedRaw> GetCachedRaws(string zipUriString)
         {
-            var cacheDirPath = GetCacheDirPath(zipUri.ToString());
-            foreach (var file in Directory.GetFiles(cacheDirPath))
-                yield return new Raw(zipUri, Path.GetFileName(file), File.ReadAllText(file));
+            return elastic.Search<CachedRaw>(q => q.Filter(f => f.Term(r => r.Zip, zipUriString))).Documents;
         }
 
-        private static void SaveToCache(string zipUri, string entryName, string entryContent)
+        private IEnumerable<Raw> GetCachedRaws(Uri zipUri)
         {
-            var cacheDirPath = GetCacheDirPath(zipUri);
-            if (!Directory.Exists(cacheDirPath))
-                Directory.CreateDirectory(cacheDirPath);
-            File.WriteAllText(Path.Combine(cacheDirPath, ConvertUriToFileName(entryName)), entryContent);
+            foreach (var cachedRaw in GetCachedRaws(zipUri.ToString()))
+                yield return new Raw(new Uri(cachedRaw.Zip), cachedRaw.Entry, cachedRaw.Content);
         }
 
-        private static string GetCacheDirPath(string zipUri)
+        private void SaveToCache(string zipUri, string entryName, string entryContent)
         {
-            return Path.Combine(Path.GetTempPath(), ConvertUriToFileName(zipUri));
-        }
-
-        private static string ConvertUriToFileName(string uri)
-        {
-            return uri.Replace(':', '_').Replace('/', '_');
+            elastic.Index(new CachedRaw {Zip = zipUri, Entry = entryName, Content = entryContent});
+            elastic.Refresh<CachedRaw>();
         }
 
         private IEnumerable<Uri> GetZipUris(string regionName)
@@ -133,7 +127,7 @@ namespace Overseer.Doorkeeper
                             .Where(p => Path.GetExtension(p.ToString()) == ".zip");
         }
 
-        public void Reset()
+        public void ResetJournal()
         {
             importJournal.Reset();
         }
@@ -141,6 +135,12 @@ namespace Overseer.Doorkeeper
         public void MarkImported(Uri entryUri)
         {
             importJournal.MarkImported(entryUri);
+        }
+
+        public void ResetCache()
+        {
+            elastic.DeleteMapping<CachedRaw>();
+            elastic.MapFromAttributes<CachedRaw>();
         }
     }
 }

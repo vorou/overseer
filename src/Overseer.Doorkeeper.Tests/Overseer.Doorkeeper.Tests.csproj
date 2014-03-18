@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GoldenRetrieverTests.cs" />
-    <Compile Include="GoldenRetrieverTestable.cs" />
+    <Compile Include="FtpClientTestable.cs" />
     <Compile Include="TenderImporterTests.cs" />
   </ItemGroup>
   <ItemGroup>
