@@ -17,12 +17,11 @@ namespace Overseer.WebApp
             var regionPage =
                 CQ.CreateFromUrl(
                                  "http://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B4%D1%8B_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8");
-            var regionTableRows = regionPage["table.sortable>tbody>tr"];
-            foreach (var row in regionTableRows.Skip(1))
+            var regionTableRows = regionPage["table.sortable"].First().Find("tr");
+            foreach (var row in regionTableRows.Skip(1).Select(dom => dom.Cq()))
             {
-                var cq = row.Cq();
-                var regionName = cq.Find("td").First().Text();
-                var regionId = cq.Find("td")[1].InnerText;
+                var regionName = row.Find("a").First().Attr("title");
+                var regionId = row.Find("td").Eq(1).Text();
                 regionIdToName.Add(regionId, regionName);
             }
             log.DebugFormat("fetched {0} regions", regionIdToName.Count);
