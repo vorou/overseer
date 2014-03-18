@@ -186,15 +186,19 @@ namespace Overseer.Doorkeeper.Tests
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
     <purchaseNumber>0361200002614001321</purchaseNumber>"
                    + body + @"
-</ns2:fcsNotificationZK>", path);
+</ns2:fcsNotificationZK>",
+                   path);
         }
 
         private void Import(string xml, string path = ValidUri)
         {
+            var zipUri = new Uri(path.Remove(path.LastIndexOf('/')));
+            var entryName = path.Substring(path.LastIndexOf('/') + 1);
+
             fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IGoldenRetriever>();
             var sut = fixture.Create<TenderImporter>();
-            A.CallTo(() => fileReader.GetNewRaws()).Returns(new[] {new Raw(new Uri(path), xml)});
+            A.CallTo(() => fileReader.GetNewRaws()).Returns(new[] {new Raw(zipUri, entryName, xml)});
 
             sut.Import();
         }

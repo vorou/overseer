@@ -9,11 +9,6 @@ namespace Overseer.Doorkeeper
             Uri = new Uri(zipUri + "/" + entryName);
         }
 
-        public Raw(Uri entryUri, string content) : this(content)
-        {
-            Uri = entryUri;
-        }
-
         private Raw(string content)
         {
             Content = content;
