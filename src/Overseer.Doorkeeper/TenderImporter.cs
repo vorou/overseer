@@ -174,7 +174,7 @@ namespace Overseer.Doorkeeper
 
                 result.Id = tenderIdElement.Value;
                 result.Type = xDoc.Root.Name.LocalName;
-                result.Source = file.Uri.ToString();
+                result.Source = file.Uri;
                 repo.Save(result);
                 reader.MarkImported(file.Uri);
                 countImported++;

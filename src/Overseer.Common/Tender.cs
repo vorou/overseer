@@ -14,7 +14,7 @@ namespace Overseer.Common
         public DateTime PublishDate { get; set; }
         [ElasticProperty(Index = FieldIndexOption.not_analyzed)]
         public string Region { get; set; }
-        [ElasticProperty(Index = FieldIndexOption.not_analyzed)]
-        public string Source { get; set; }
+        [ElasticProperty(Index = FieldIndexOption.not_analyzed, Type = FieldType.string_type)]
+        public Uri Source { get; set; }
     }
 }

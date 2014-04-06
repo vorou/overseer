@@ -11,7 +11,7 @@ namespace Overseer.Doorkeeper.Tests
 {
     public class TenderImporterTests
     {
-        private const string ValidUri = "ftp://valid/region/Adygeja_Resp";
+        private static readonly Uri ValidUri = new Uri("ftp://valid/region/Adygeja_Resp");
         private readonly IFixture fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
         [Fact]
@@ -130,7 +130,7 @@ namespace Overseer.Doorkeeper.Tests
             ImportValidXmlWith("", src);
 
             var reader = fixture.Create<IGoldenRetriever>();
-            A.CallTo(() => reader.MarkImported(new Uri(src))).MustHaveHappened();
+            A.CallTo(() => reader.MarkImported(src)).MustHaveHappened();
         }
 
         [Theory]
@@ -138,7 +138,8 @@ namespace Overseer.Doorkeeper.Tests
         [InlineData("ftp://localhost/fcs_regions/Omskaja_obl/notifications/currMonth/panda.zip", "55")]
         public void Import_KnownRegion_SetsRegion(string src, string expected)
         {
-            ImportValidXmlWith("", src);
+            var srcUri = new Uri(src);
+            ImportValidXmlWith("", srcUri);
 
             AssertImportedTender(t => t.Region == expected);
         }
@@ -146,7 +147,7 @@ namespace Overseer.Doorkeeper.Tests
         [Fact]
         public void Import_UnknownRegion_ShouldNotSave()
         {
-            ImportValidXmlWith("", "ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip");
+            ImportValidXmlWith("", new Uri("ftp://localhost/fcs_regions/Panda_obl/notifications/currMonth/panda.zip"));
 
             var repo = fixture.Create<ITenderRepository>();
             A.CallTo(() => repo.Save(A<Tender>._)).MustNotHaveHappened();
@@ -175,25 +176,32 @@ namespace Overseer.Doorkeeper.Tests
             AssertNothingWasSaved();
         }
 
-        private void ImportValidXmlWith(string body = "", string path = ValidUri)
+        private void ImportValidXmlWith(string body = "", Uri path = null)
         {
+            if (path == null)
+                path = ValidUri;
             ImportValidXmlWithoutPrice(@"<maxPrice>999.99</maxPrice>" + body, path);
         }
 
-        private void ImportValidXmlWithoutPrice(string body = "", string path = ValidUri)
+        private void ImportValidXmlWithoutPrice(string body = "", Uri path = null)
         {
+            if (path == null)
+                path = ValidUri;
             Import(@"
 <ns2:fcsNotificationZK schemeVersion=""1.0"" xmlns=""http://zakupki.gov.ru/oos/types/1"" xmlns:ns2=""http://zakupki.gov.ru/oos/printform/1"">
-    <purchaseNumber>0361200002614001321</purchaseNumber>"
-                   + body + @"
-</ns2:fcsNotificationZK>",
-                   path);
+    <purchaseNumber>0361200002614001321</purchaseNumber>" + body + @"
+</ns2:fcsNotificationZK>", path);
         }
 
-        private void Import(string xml, string path = ValidUri)
+        private void Import(string xml, Uri path = null)
         {
-            var zipUri = new Uri(path.Remove(path.LastIndexOf('/')));
-            var entryName = path.Substring(path.LastIndexOf('/') + 1);
+            if (path == null)
+                path = ValidUri;
+
+            var pathString = path.ToString();
+
+            var zipUri = new Uri(pathString.Remove(pathString.LastIndexOf('/')));
+            var entryName = pathString.Substring(pathString.LastIndexOf('/') + 1);
 
             fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IGoldenRetriever>();
