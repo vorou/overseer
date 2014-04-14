@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Overseer.Common;
 
 namespace Overseer.Doorkeeper.Tests
 {

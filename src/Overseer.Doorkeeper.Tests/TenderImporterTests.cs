@@ -206,7 +206,7 @@ namespace Overseer.Doorkeeper.Tests
             fixture.Freeze<ITenderRepository>();
             var fileReader = fixture.Freeze<IGoldenRetriever>();
             var sut = fixture.Create<TenderImporter>();
-            A.CallTo(() => fileReader.GetNewRaws()).Returns(new[] {new Raw(zipUri, entryName, xml)});
+            A.CallTo(() => fileReader.GetNewRaws()).Returns(new[] {new XmlDownloaded(zipUri, entryName, xml)});
 
             sut.Import();
         }

@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using log4net;
 
-namespace Overseer.Doorkeeper
+namespace Overseer.Common
 {
     public class FtpClient
     {

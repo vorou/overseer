@@ -29,7 +29,7 @@ namespace Overseer.Doorkeeper
             log.InfoFormat("using {0}", ftp);
         }
 
-        public IEnumerable<Raw> GetNewRaws()
+        public IEnumerable<XmlDownloaded> GetNewRaws()
         {
             // .ToList() is to fetch the dirs and release the ftp connection
             var regionNames = FtpClient.ListDirectory("fcs_regions/").Select(uri => uri.Segments.Last()).Except(new[] {"_logs"}).ToList();
@@ -78,7 +78,7 @@ namespace Overseer.Doorkeeper
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
 
                         var rawContent = new StreamReader(zipEntry.Open()).ReadToEnd();
-                        var raw = new Raw(zipUri, zipEntry.FullName, rawContent);
+                        var raw = new XmlDownloaded(zipUri, zipEntry.FullName, rawContent);
 
                         entries++;
                         importJournal.RememberEntry(zipUri, zipEntry.FullName);
@@ -108,10 +108,10 @@ namespace Overseer.Doorkeeper
             return elastic.Search<CachedRaw>(q => q.Filter(f => f.Term(r => r.Zip, zipUriString))).Documents;
         }
 
-        private IEnumerable<Raw> GetCachedRaws(Uri zipUri)
+        private IEnumerable<XmlDownloaded> GetCachedRaws(Uri zipUri)
         {
             foreach (var cachedRaw in GetCachedRaws(zipUri.ToString()))
-                yield return new Raw(new Uri(cachedRaw.Zip), cachedRaw.Entry, cachedRaw.Content);
+                yield return new XmlDownloaded(new Uri(cachedRaw.Zip), cachedRaw.Entry, cachedRaw.Content);
         }
 
         private void SaveToCache(string zipUri, string entryName, string entryContent)

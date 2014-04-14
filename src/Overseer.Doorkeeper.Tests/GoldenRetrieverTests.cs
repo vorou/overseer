@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using Overseer.Common;
 using Shouldly;
 using Xunit;
 using Xunit.Extensions;
