@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
 using EasyNetQ;
 using Overseer.Common;
@@ -23,7 +21,7 @@ namespace Overseer.NumberExtractor
             var tenderIdElement = xDoc.Descendants().FirstOrDefault(el => el.Name.LocalName == "purchaseNumber");
             var number = tenderIdElement.Value;
             Console.Out.WriteLine("tender number was seen: {0}", number);
-            Bus.Publish(new TenderNumberWasSeen{Number = number});
+            Bus.Publish(new TenderNumberWasSeen {Number = number});
         }
     }
 }
