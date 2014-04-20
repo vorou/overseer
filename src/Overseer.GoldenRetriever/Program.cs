@@ -10,7 +10,7 @@ namespace Overseer.GoldenRetriever
     public class Program
     {
         private static readonly FtpClient FtpClient = new FtpClient(new Uri("ftp://ftp.zakupki.gov.ru"));
-        private static readonly IBus Bus = RabbitHutch.CreateBus("host=localhost");
+        private static readonly IBus Bus = BusFactory.CreateBus();
 
         private static void Main(string[] args)
         {

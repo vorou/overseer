@@ -1,12 +1,13 @@
 ﻿using System.Net;
 using EasyNetQ;
+using Overseer.Common;
 using Overseer.Common.Messages;
 
 namespace Overseer.Checker
 {
     public class Program
     {
-        private static readonly IBus Bus = RabbitHutch.CreateBus("host=localhost");
+        private static readonly IBus Bus = BusFactory.CreateBus();
 
         private static void Main(string[] args)
         {

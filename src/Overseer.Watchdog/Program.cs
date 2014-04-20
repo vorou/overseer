@@ -14,7 +14,7 @@ namespace Overseer.Watchdog
     {
         private static readonly FtpClient FtpClient = new FtpClient(new Uri("ftp://ftp.zakupki.gov.ru"));
         private static readonly ILog Log = LogManager.GetLogger(typeof (Program));
-        private static readonly IBus Bus = RabbitHutch.CreateBus("host=localhost");
+        private static readonly IBus Bus = BusFactory.CreateBus();
 
         private static void Main(string[] args)
         {

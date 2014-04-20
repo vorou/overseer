@@ -2,13 +2,14 @@
 using System.Linq;
 using System.Xml.Linq;
 using EasyNetQ;
+using Overseer.Common;
 using Overseer.Common.Messages;
 
 namespace Overseer.NumberExtractor
 {
     public class Program
     {
-        private static readonly IBus Bus = RabbitHutch.CreateBus("host=localhost");
+        private static readonly IBus Bus = BusFactory.CreateBus();
 
         private static void Main(string[] args)
         {
