@@ -5,6 +5,7 @@ using System.Linq;
 using EasyNetQ;
 using log4net;
 using Overseer.Common;
+using Overseer.Common.Messages;
 
 namespace Overseer.Watchdog
 {

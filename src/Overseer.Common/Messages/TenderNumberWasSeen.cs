@@ -1,4 +1,4 @@
-namespace Overseer.Common
+namespace Overseer.Common.Messages
 {
     public class TenderNumberWasSeen
     {

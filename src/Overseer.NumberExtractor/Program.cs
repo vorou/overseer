@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using EasyNetQ;
-using Overseer.Common;
+using Overseer.Common.Messages;
 
 namespace Overseer.NumberExtractor
 {

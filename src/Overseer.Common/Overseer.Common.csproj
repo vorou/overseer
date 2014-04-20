@@ -64,15 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ElasticClientFactory.cs" />
-    <Compile Include="FileWasSeen.cs" />
+    <Compile Include="Messages\FileWasSeen.cs" />
     <Compile Include="FtpClient.cs" />
-    <Compile Include="ITenderRepository.cs" />
     <Compile Include="LogConfigurator.cs" />
-    <Compile Include="TenderNumberWasSeen.cs" />
-    <Compile Include="TenderWasChecked.cs" />
-    <Compile Include="XmlDownloaded.cs" />
-    <Compile Include="Tender.cs" />
-    <Compile Include="TenderRepository.cs" />
+    <Compile Include="Messages\TenderNumberWasSeen.cs" />
+    <Compile Include="Messages\TenderWasChecked.cs" />
+    <Compile Include="Messages\XmlDownloaded.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

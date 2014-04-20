@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using EasyNetQ;
-using Overseer.Common;
+using Overseer.Common.Messages;
 
 namespace Overseer.Checker
 {

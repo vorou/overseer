@@ -1,6 +1,6 @@
 ﻿using System;
 using EasyNetQ;
-using Overseer.Common;
+using Overseer.Common.Messages;
 
 namespace Overseer.CheckLog
 {

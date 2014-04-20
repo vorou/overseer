@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using EasyNetQ;
 using Overseer.Common;
+using Overseer.Common.Messages;
 
 namespace Overseer.GoldenRetriever
 {
