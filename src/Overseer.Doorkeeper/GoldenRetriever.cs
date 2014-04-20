@@ -78,7 +78,8 @@ namespace Overseer.Doorkeeper
                         log.DebugFormat("processing entry {0}", zipEntry.FullName);
 
                         var rawContent = new StreamReader(zipEntry.Open()).ReadToEnd();
-                        var raw = new XmlDownloaded(zipUri, zipEntry.FullName, rawContent);
+//                        var raw = new XmlDownloaded(zipUri, zipEntry.FullName, rawContent);
+                        var raw = new XmlDownloaded();
 
                         entries++;
                         importJournal.RememberEntry(zipUri, zipEntry.FullName);
@@ -110,8 +111,9 @@ namespace Overseer.Doorkeeper
 
         private IEnumerable<XmlDownloaded> GetCachedRaws(Uri zipUri)
         {
-            foreach (var cachedRaw in GetCachedRaws(zipUri.ToString()))
-                yield return new XmlDownloaded(new Uri(cachedRaw.Zip), cachedRaw.Entry, cachedRaw.Content);
+            yield break;
+//            foreach (var cachedRaw in GetCachedRaws(zipUri.ToString()))
+//                yield return new XmlDownloaded(new Uri(cachedRaw.Zip), cachedRaw.Entry, cachedRaw.Content);
         }
 
         private void SaveToCache(string zipUri, string entryName, string entryContent)
