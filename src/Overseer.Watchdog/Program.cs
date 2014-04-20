@@ -9,7 +9,6 @@ using Overseer.Common.Messages;
 
 namespace Overseer.Watchdog
 {
-    //TODO: finish copypasting all the stuff to make it work
     public class Program
     {
         private static readonly FtpClient FtpClient = new FtpClient(new Uri("ftp://ftp.zakupki.gov.ru"));
